@@ -38,14 +38,14 @@ export default function BreathOfLifePage() {
             <div className="mt-10 w-full bg-[#f5f3ef] md:mt-12 lg:mt-14">
               <div className="grid grid-cols-1 gap-10 px-4 py-10 md:grid-cols-12 md:gap-12 md:px-8 md:py-12 lg:gap-16 lg:px-10 lg:py-14">
                 <div className="md:col-span-7 lg:col-span-7">
-                  <div className="relative h-[520px] w-full overflow-hidden md:h-[640px] lg:h-[720px]">
+                  <div className="relative h-[420px] w-full overflow-hidden sm:h-[480px] md:h-[640px] lg:h-[720px]">
                     <RevealImageOnView
                       src="/assets/jimeng-2026-04-21-9916.png"
                       alt="Breath Of Life key visual"
                       priority
                       variant="circle"
                       className="absolute inset-0"
-                      imageClassName="origin-left scale-100 object-contain object-left md:scale-[1.2]"
+                      imageClassName="origin-center scale-[1.12] object-contain object-center md:origin-left md:scale-[1.2] md:object-left"
                       backgroundColor="#f5f3ef"
                     />
                   </div>
@@ -54,7 +54,7 @@ export default function BreathOfLifePage() {
                 <div className="flex md:col-span-5 md:items-end lg:col-span-5">
                   <div className="ml-auto w-full max-w-[640px] md:max-w-[720px] lg:max-w-[840px] xl:max-w-[980px]">
                     <CokeBreakFadeInOnView delay={1.35} className="mb-6">
-                      <div className="flex justify-start">
+                      <div className="flex justify-end md:justify-start">
                         <img src="/assets/COPD.png" alt="COPD" className="h-10 w-auto md:h-12 lg:h-14" />
                       </div>
                     </CokeBreakFadeInOnView>
