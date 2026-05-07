@@ -9,7 +9,7 @@ const featuredWorkVideos = [
   {
     src: "/videos/0417-BreathOfLifeMontage.mp4",
     href: "/work/breathoflife",
-    title: "BREATH OF LIFE",
+    title: "BREATH OF LIFE — Cannes Lions Grand Prix",
   },
   {
     src: "/videos/0417-CokeOlympicMontage.mp4",
@@ -76,24 +76,12 @@ export function FeaturedWorkSection() {
                   <source src={src} type="video/mp4" />
                 </video>
 
-                {(src === "/videos/0417-CokeBreakMontage.mp4" || src === "/videos/0417-BreathOfLifeMontage.mp4") && (
-                  <div className="pointer-events-none absolute left-4 top-4 z-20 md:left-6 md:top-6">
-                    <div
-                      className={
-                        src === "/videos/0417-BreathOfLifeMontage.mp4"
-                          ? "select-none text-[22px] font-medium uppercase tracking-[0.08em] text-neutral-700 md:text-[29px] lg:text-[35px]"
-                          : "mix-blend-difference select-none text-[22px] font-medium uppercase tracking-[0.08em] text-white md:text-[29px] lg:text-[35px]"
-                      }
-                    >
-                      {title}
-                    </div>
-                  </div>
-                )}
-
                 <span
                   className={`learnmore-btn absolute bottom-4 right-4 z-20 items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 md:bottom-6 md:right-6 ${src === "/videos/0417-CokeOlympicMontage.mp4" || src === "/videos/0417-SpriteZeroMontage.mp4"
                     ? "hidden min-[960px]:flex"
-                    : "flex"
+                    : src === "/videos/0417-CokeBreakMontage.mp4" || src === "/videos/0417-BreathOfLifeMontage.mp4"
+                      ? "hidden min-[960px]:flex"
+                      : "flex"
                     }`}
                 >
                   <svg
@@ -115,11 +103,9 @@ export function FeaturedWorkSection() {
                 </span>
               </div>
 
-              {(src === "/videos/0417-CokeOlympicMontage.mp4" || src === "/videos/0417-SpriteZeroMontage.mp4") && (
-                <div className="mt-4 w-full text-center text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-900">
-                  {title}
-                </div>
-              )}
+              <div className="mt-4 w-full text-center text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-900">
+                {title}
+              </div>
             </Link>
           ))}
 

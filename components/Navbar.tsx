@@ -158,7 +158,7 @@ export function Navbar({ variant = "home" }: NavbarProps) {
                         ))}
                     </div>
 
-                    <div className="flex flex-1 items-center justify-center md:flex-none md:absolute md:left-1/2 md:-translate-x-1/2">
+                    <div className="flex flex-1 items-center justify-start md:flex-none md:absolute md:left-1/2 md:-translate-x-1/2">
                         <Link href="/" className="relative flex items-center justify-center">
                             <HoverBlurText
                                 text="Erik Wu"

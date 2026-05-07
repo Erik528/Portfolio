@@ -213,7 +213,7 @@ export function HeroSection() {
             </div>
           </motion.div>
 
-          <div className="relative -translate-y-6 grid grid-cols-1 items-center gap-y-8 md:-translate-y-8 md:grid-cols-2 md:gap-x-8 md:gap-y-10 lg:grid-cols-[1.2fr_auto_1.2fr] lg:gap-y-12 lg:-translate-y-10">
+          <div className="relative -translate-y-50 grid grid-cols-1 items-center gap-y-8 md:-translate-y-8 md:grid-cols-2 md:gap-x-8 md:gap-y-10 lg:grid-cols-[1.2fr_auto_1.2fr] lg:gap-y-12 lg:-translate-y-10">
             {/* Left Slogan - High z-index */}
             <div className="relative z-10 col-start-1 row-start-1 flex justify-center md:justify-start lg:justify-end">
               <p
@@ -259,7 +259,7 @@ export function HeroSection() {
             </div>
 
             {/* Central Video Container - Low z-index */}
-            <div className="relative z-0 col-span-1 col-start-1 row-start-3 mx-auto w-full max-w-[560px] md:col-span-2 md:col-start-1 md:row-start-2 lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:max-w-[700px]">
+            <div className="relative z-0 col-span-1 col-start-1 row-start-3 mx-auto w-full max-w-[560px] translate-y-18 sm:translate-y-8 md:col-span-2 md:col-start-1 md:row-start-2 md:translate-y-0 lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:max-w-[700px]">
               <motion.div
                 initial={{ opacity: 0, scale: 1.4, rotate: 0, filter: "blur(18px)" }}
                 animate={introDone ? undefined : videoControls}
