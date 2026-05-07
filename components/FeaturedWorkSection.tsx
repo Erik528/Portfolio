@@ -62,33 +62,78 @@ export function FeaturedWorkSection() {
               key={src}
               href={href}
               aria-label="View Work"
-              className={`group relative block aspect-video w-full min-w-0 overflow-hidden ${idx < 2 ? "min-[480px]:col-span-2" : ""}`}
+              className={`group block w-full min-w-0 ${idx < 2 ? "min-[480px]:col-span-2" : ""}`}
             >
+              <div className="relative aspect-video w-full overflow-hidden">
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className="absolute inset-0 h-full w-full object-cover grayscale-[0.2] transition-all duration-700 hover:grayscale-0"
+                >
+                  <source src={src} type="video/mp4" />
+                </video>
+
+                {(src === "/videos/0417-CokeBreakMontage.mp4" || src === "/videos/0417-BreathOfLifeMontage.mp4") && (
+                  <div className="pointer-events-none absolute left-4 top-4 z-20 md:left-6 md:top-6">
+                    <div
+                      className={
+                        src === "/videos/0417-BreathOfLifeMontage.mp4"
+                          ? "select-none text-[22px] font-medium uppercase tracking-[0.08em] text-neutral-700 md:text-[29px] lg:text-[35px]"
+                          : "mix-blend-difference select-none text-[22px] font-medium uppercase tracking-[0.08em] text-white md:text-[29px] lg:text-[35px]"
+                      }
+                    >
+                      {title}
+                    </div>
+                  </div>
+                )}
+
+                <span className="learnmore-btn absolute bottom-4 right-4 z-20 flex items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 md:bottom-6 md:right-6">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-neutral-700 transition-transform duration-500 group-hover:translate-x-0.5"
+                  >
+                    <path d="M7 8h6v10M13 18l-3-3M13 18l3-3" />
+                  </svg>
+                  <span className="learnmore-text text-[9px] font-bold tracking-[0.5em] text-neutral-700 transition-colors duration-500 group-hover:text-neutral-900">
+                    LEARN MORE
+                  </span>
+                </span>
+              </div>
+
+              {(src === "/videos/0417-CokeOlympicMontage.mp4" || src === "/videos/0417-SpriteZeroMontage.mp4") && (
+                <div className="mt-4 w-full text-center text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-900">
+                  {title}
+                </div>
+              )}
+            </Link>
+          ))}
+
+          <Link
+            href={visualCampaignsCard.href}
+            aria-label={visualCampaignsCard.title}
+            className="group block w-full"
+          >
+            <div className="relative aspect-video w-full overflow-hidden border border-neutral-300/50">
               <video
                 autoPlay
                 muted
                 loop
                 playsInline
                 preload="metadata"
-                className="absolute inset-0 h-full w-full object-cover grayscale-[0.2] transition-all duration-700 hover:grayscale-0"
+                className="absolute inset-0 h-full w-full object-cover"
               >
-                <source src={src} type="video/mp4" />
+                <source src={visualCampaignsCard.src} type="video/mp4" />
               </video>
-              {(src === "/videos/0417-CokeOlympicMontage.mp4" ||
-                src === "/videos/0417-SpriteZeroMontage.mp4") && (
-                  <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-24 bg-gradient-to-b from-black/55 via-black/22 to-transparent md:h-28 lg:h-32" />
-                )}
-              <div className="pointer-events-none absolute left-4 top-4 z-20 md:left-6 md:top-6">
-                <div
-                  className={
-                    src === "/videos/0417-BreathOfLifeMontage.mp4"
-                      ? "select-none text-[22px] font-medium uppercase tracking-[0.08em] text-neutral-700 md:text-[29px] lg:text-[35px]"
-                      : "mix-blend-difference select-none text-[22px] font-medium uppercase tracking-[0.08em] text-white md:text-[29px] lg:text-[35px]"
-                  }
-                >
-                  {title}
-                </div>
-              </div>
               <span className="learnmore-btn absolute bottom-4 right-4 z-20 flex items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 md:bottom-6 md:right-6">
                 <svg
                   width="12"
@@ -107,89 +152,50 @@ export function FeaturedWorkSection() {
                   LEARN MORE
                 </span>
               </span>
-            </Link>
-          ))}
-
-          <Link
-            href={visualCampaignsCard.href}
-            aria-label={visualCampaignsCard.title}
-            className="group relative block aspect-video w-full overflow-hidden border border-neutral-300/50"
-          >
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              className="absolute inset-0 h-full w-full object-cover"
-            >
-              <source src={visualCampaignsCard.src} type="video/mp4" />
-            </video>
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-24 bg-gradient-to-b from-black/55 via-black/22 to-transparent md:h-28 lg:h-32" />
-            <div className="pointer-events-none absolute left-4 top-4 z-20 select-none md:left-6 md:top-6">
-              <div className="text-[22px] font-medium uppercase tracking-[0.08em] text-white md:text-[29px] lg:text-[35px]">
-                {visualCampaignsCard.title}
-              </div>
             </div>
-            <span className="learnmore-btn absolute bottom-4 right-4 z-20 flex items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 md:bottom-6 md:right-6">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-neutral-700 transition-transform duration-500 group-hover:translate-x-0.5"
-              >
-                <path d="M7 8h6v10M13 18l-3-3M13 18l3-3" />
-              </svg>
-              <span className="learnmore-text text-[9px] font-bold tracking-[0.5em] text-neutral-700 transition-colors duration-500 group-hover:text-neutral-900">
-                LEARN MORE
-              </span>
-            </span>
+            <div className="mt-4 w-full text-center text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-900">
+              {visualCampaignsCard.title}
+            </div>
           </Link>
 
           <Link
             href={mobileExperienceCard.href}
             aria-label={mobileExperienceCard.title}
-            className="group relative block aspect-video w-full overflow-hidden border border-neutral-300/50"
+            className="group block w-full"
           >
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              className="absolute inset-0 h-full w-full object-cover"
-            >
-              <source src={mobileExperienceCard.src} type="video/mp4" />
-            </video>
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-24 bg-gradient-to-b from-black/55 via-black/22 to-transparent md:h-28 lg:h-32" />
-            <div className="pointer-events-none absolute left-4 top-4 z-20 select-none md:left-6 md:top-6">
-              <div className="text-[22px] font-medium uppercase tracking-[0.08em] text-white md:text-[29px] lg:text-[35px]">
-                {mobileExperienceCard.title}
-              </div>
-            </div>
-            <span className="learnmore-btn absolute bottom-4 right-4 z-20 flex items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 md:bottom-6 md:right-6">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-neutral-700 transition-transform duration-500 group-hover:translate-x-0.5"
+            <div className="relative aspect-video w-full overflow-hidden border border-neutral-300/50">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 h-full w-full object-cover"
               >
-                <path d="M7 8h6v10M13 18l-3-3M13 18l3-3" />
-              </svg>
-              <span className="learnmore-text text-[9px] font-bold tracking-[0.5em] text-neutral-700 transition-colors duration-500 group-hover:text-neutral-900">
-                LEARN MORE
+                <source src={mobileExperienceCard.src} type="video/mp4" />
+              </video>
+              <span className="learnmore-btn absolute bottom-4 right-4 z-20 flex items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 md:bottom-6 md:right-6">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-neutral-700 transition-transform duration-500 group-hover:translate-x-0.5"
+                >
+                  <path d="M7 8h6v10M13 18l-3-3M13 18l3-3" />
+                </svg>
+                <span className="learnmore-text text-[9px] font-bold tracking-[0.5em] text-neutral-700 transition-colors duration-500 group-hover:text-neutral-900">
+                  LEARN MORE
+                </span>
               </span>
-            </span>
+            </div>
+            <div className="mt-4 w-full text-center text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-900">
+              {mobileExperienceCard.title}
+            </div>
           </Link>
         </div>
       </div>

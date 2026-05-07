@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { motion, useAnimationControls, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useAnimationControls, useScroll, useTransform } from "framer-motion";
 import hoverStyles from "./HeroSloganHover.module.css";
 const heroVideoSrc = "/videos/liquidball.mp4";
 const easeInOutQuad = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+const amplifiedWords = ["AMPLIFIED", "ENHANCED", "POWERED", "EXPANDED"] as const;
+const amplifiedWordSizer = amplifiedWords.reduce((a, b) => (a.length >= b.length ? a : b));
 
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,6 +17,7 @@ export function HeroSection() {
   const [introReady, setIntroReady] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const [scrollDownReady, setScrollDownReady] = useState(false);
+  const [amplifiedWordIdx, setAmplifiedWordIdx] = useState(0);
   const oneVisionWordsControls = useAnimationControls();
   const videoControls = useAnimationControls();
   const aiControls = useAnimationControls();
@@ -76,6 +79,14 @@ export function HeroSection() {
   const scale = useTransform(scrollYProgress, [0, 0.85], [1.4, 1.8], { ease: easeInOutQuad });
   const rotate = useTransform(scrollYProgress, [0, 0.85], [0, 45], { ease: easeInOutQuad });
   const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.9, 1], [1, 1, 0]);
+
+  useEffect(() => {
+    if (!introDone) return;
+    const id = window.setInterval(() => {
+      setAmplifiedWordIdx((i) => (i + 1) % amplifiedWords.length);
+    }, 3200);
+    return () => window.clearInterval(id);
+  }, [introDone]);
 
   useLayoutEffect(() => {
     const init = async () => {
@@ -290,10 +301,10 @@ export function HeroSection() {
                     show: { transition: { staggerChildren: 0.08 } },
                   }}
                 >
-                  {Array.from("AI Amplified").map((ch, idx) => (
+                  {["A", "I"].map((ch, idx) => (
                     <motion.span
                       key={`${ch}-${idx}`}
-                      className="inline-block"
+                      className="inline-block align-baseline"
                       variants={{
                         hidden: { opacity: 0, filter: "blur(12px)" },
                         show: {
@@ -303,9 +314,86 @@ export function HeroSection() {
                         },
                       }}
                     >
-                      <span className={hoverStyles.char}>{ch === " " ? "\u00A0" : ch}</span>
+                      <span className={`${hoverStyles.char} ${idx < 2 ? "font-bold" : ""}`}>{ch}</span>
                     </motion.span>
                   ))}
+                  <motion.span
+                    className="relative ml-[0.55em] inline-block align-baseline"
+                    variants={{
+                      hidden: { opacity: 0, filter: "blur(12px)" },
+                      show: {
+                        opacity: 1,
+                        filter: "blur(0px)",
+                        transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
+                      },
+                    }}
+                  >
+                    <span aria-hidden className="invisible inline-block">
+                      {amplifiedWordSizer}
+                    </span>
+                    <AnimatePresence mode="sync" initial={false}>
+                      <motion.span
+                        key={amplifiedWords[amplifiedWordIdx]}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        variants={{
+                          enter: {
+                            opacity: 0,
+                            filter: "blur(18px)",
+                            scale: 0.985,
+                            skewX: -8,
+                            textShadow: "0 0 18px rgba(0,0,0,0.22), -2px 0 0 rgba(0,255,255,0.10), 2px 0 0 rgba(255,0,255,0.10)",
+                          },
+                          center: {
+                            opacity: 1,
+                            filter: "blur(0px)",
+                            scale: 1,
+                            skewX: 0,
+                            textShadow: "0 0 0 rgba(0,0,0,0), 0 0 0 rgba(0,255,255,0), 0 0 0 rgba(255,0,255,0)",
+                            transition: {
+                              duration: 0.8,
+                              ease: [0.22, 1, 0.36, 1],
+                              when: "beforeChildren",
+                              staggerChildren: 0.05,
+                            },
+                          },
+                          exit: {
+                            opacity: 0,
+                            filter: "blur(18px)",
+                            scale: 1.015,
+                            skewX: 8,
+                            textShadow: "0 0 18px rgba(0,0,0,0.22), -2px 0 0 rgba(0,255,255,0.10), 2px 0 0 rgba(255,0,255,0.10)",
+                            transition: {
+                              duration: 0.45,
+                              ease: [0.22, 1, 0.36, 1],
+                              when: "afterChildren",
+                            },
+                          },
+                        }}
+                        className="absolute left-0 top-0 inline-flex"
+                      >
+                        {Array.from(amplifiedWords[amplifiedWordIdx]).map((ch, idx) => (
+                          <motion.span
+                            key={`${amplifiedWords[amplifiedWordIdx]}-${ch}-${idx}`}
+                            variants={{
+                              enter: { opacity: 0, y: 6, filter: "blur(10px)" },
+                              center: {
+                                opacity: 1,
+                                y: 0,
+                                filter: "blur(0px)",
+                                transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+                              },
+                              exit: { opacity: 0, y: -6, filter: "blur(10px)", transition: { duration: 0.28 } },
+                            }}
+                            className="inline-block"
+                          >
+                            <span className={hoverStyles.char}>{ch}</span>
+                          </motion.span>
+                        ))}
+                      </motion.span>
+                    </AnimatePresence>
+                  </motion.span>
                 </motion.span>
               </p>
             </motion.div>
