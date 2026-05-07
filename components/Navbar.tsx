@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import hoverStyles from "./HeroSloganHover.module.css";
 
 function HoverBlurText({ text, className }: { text: string; className?: string }) {
@@ -89,6 +89,7 @@ type NavbarProps = {
 };
 
 export function Navbar({ variant = "home" }: NavbarProps) {
+    const [menuOpen, setMenuOpen] = useState(false);
     const navLinks = [
         { label: "Work", href: "#featured-work" },
         { label: "Resume", href: "#resume" },
@@ -99,6 +100,15 @@ export function Navbar({ variant = "home" }: NavbarProps) {
         variant === "workDetail" ? [{ label: "Back", href: "/#featured-work" }] : navLinks.slice(0, 1);
 
     const rightLinks = variant === "workDetail" ? [] : navLinks.slice(1);
+
+    useEffect(() => {
+        if (!menuOpen) return;
+        const onResize = () => {
+            if (window.matchMedia("(min-width: 768px)").matches) setMenuOpen(false);
+        };
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, [menuOpen]);
 
     return (
         <header className="sticky top-0 z-50 border-b border-neutral-300/50 bg-[#f5f3ef]/80 backdrop-blur-sm">
@@ -119,13 +129,14 @@ export function Navbar({ variant = "home" }: NavbarProps) {
                     +
                 </div>
 
-                <nav className="relative flex h-16 items-center justify-between">
-                    <div className="flex items-center gap-6 md:gap-12">
+                <nav className="relative flex h-16 items-center">
+                    <div className={`${variant === "workDetail" ? "flex" : "hidden md:flex"} items-center gap-6 md:gap-12`}>
                         {leftLinks.map((link) => (
                             <a
                                 key={link.label}
                                 href={link.href}
                                 className="group relative py-2 text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-800 transition-colors hover:text-neutral-950"
+                                onClick={() => setMenuOpen(false)}
                             >
                                 {variant === "workDetail" ? (
                                     <svg
@@ -147,7 +158,7 @@ export function Navbar({ variant = "home" }: NavbarProps) {
                         ))}
                     </div>
 
-                    <div className="absolute left-1/2 -translate-x-1/2">
+                    <div className="flex flex-1 items-center justify-center md:flex-none md:absolute md:left-1/2 md:-translate-x-1/2">
                         <Link href="/" className="relative flex items-center justify-center">
                             <HoverBlurText
                                 text="Erik Wu"
@@ -156,18 +167,48 @@ export function Navbar({ variant = "home" }: NavbarProps) {
                         </Link>
                     </div>
 
-                    <div className="flex items-center gap-6 md:gap-12">
+                    <div className="ml-auto flex items-center">
+                        <div className="hidden items-center gap-6 md:flex md:gap-12">
                         {rightLinks.map((link) => (
                             <a
                                 key={link.label}
                                 href={link.href}
                                 className="group relative py-2 text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-800 transition-colors hover:text-neutral-950"
+                                onClick={() => setMenuOpen(false)}
                             >
                                 <HoverBlurText text={link.label} />
                             </a>
                         ))}
+                        </div>
+                        {variant === "workDetail" ? null : (
+                            <button
+                                type="button"
+                                aria-label="Open menu"
+                                aria-expanded={menuOpen}
+                                onClick={() => setMenuOpen((v) => !v)}
+                                className="md:hidden py-2 text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-800"
+                            >
+                                <HoverBlurText text="Menu" />
+                            </button>
+                        )}
                     </div>
                 </nav>
+                {variant === "workDetail" ? null : (
+                    <div className={`${menuOpen ? "block" : "hidden"} md:hidden pb-4`}>
+                        <div className="border-t border-neutral-300/50 pt-3 space-y-2">
+                            {navLinks.map((link) => (
+                                <a
+                                    key={link.label}
+                                    href={link.href}
+                                    className="block py-2 text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-800"
+                                    onClick={() => setMenuOpen(false)}
+                                >
+                                    {link.label}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </header>
     );

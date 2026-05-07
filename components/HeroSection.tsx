@@ -213,12 +213,12 @@ export function HeroSection() {
             </div>
           </motion.div>
 
-          <div className="relative -translate-y-6 grid grid-cols-2 items-center gap-x-8 gap-y-10 md:-translate-y-8 lg:grid-cols-[1.2fr_auto_1.2fr] lg:gap-y-12 lg:-translate-y-10">
+          <div className="relative -translate-y-6 grid grid-cols-1 items-center gap-y-8 md:-translate-y-8 md:grid-cols-2 md:gap-x-8 md:gap-y-10 lg:grid-cols-[1.2fr_auto_1.2fr] lg:gap-y-12 lg:-translate-y-10">
             {/* Left Slogan - High z-index */}
-            <div className="relative z-10 col-start-1 row-start-1 flex justify-start lg:justify-end">
+            <div className="relative z-10 col-start-1 row-start-1 flex justify-center md:justify-start lg:justify-end">
               <p
                 ref={oneVisionHoverRef}
-                className="whitespace-nowrap text-left text-xl font-medium uppercase tracking-[0.3em] text-neutral-800 md:text-2xl lg:text-right lg:text-3xl"
+                className="whitespace-nowrap text-center text-base font-medium uppercase tracking-[0.22em] text-neutral-800 sm:text-lg md:text-left md:text-2xl md:tracking-[0.3em] lg:text-right lg:text-3xl"
                 onMouseMove={(e) => {
                   if (!oneVisionHoverRef.current) return;
                   scheduleHoverGradient(oneVisionHoverRef.current, e.clientX, e.clientY);
@@ -259,7 +259,7 @@ export function HeroSection() {
             </div>
 
             {/* Central Video Container - Low z-index */}
-            <div className="relative z-0 col-span-2 col-start-1 row-start-2 mx-auto w-full max-w-[560px] lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:max-w-[700px]">
+            <div className="relative z-0 col-span-1 col-start-1 row-start-3 mx-auto w-full max-w-[560px] md:col-span-2 md:col-start-1 md:row-start-2 lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:max-w-[700px]">
               <motion.div
                 initial={{ opacity: 0, scale: 1.4, rotate: 0, filter: "blur(18px)" }}
                 animate={introDone ? undefined : videoControls}
@@ -282,11 +282,11 @@ export function HeroSection() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={aiControls}
-              className="relative z-10 col-start-2 row-start-1 flex justify-end lg:col-start-3 lg:justify-start"
+              className="relative z-10 col-start-1 row-start-2 flex justify-center md:col-start-2 md:row-start-1 md:justify-end lg:col-start-3 lg:justify-start"
             >
               <p
                 ref={aiHoverRef}
-                className="whitespace-nowrap text-right text-xl font-medium uppercase tracking-[0.3em] text-neutral-800 md:text-2xl lg:text-left lg:text-3xl"
+                className="whitespace-nowrap text-center text-base font-medium uppercase tracking-[0.22em] text-neutral-800 sm:text-lg md:text-right md:text-2xl md:tracking-[0.3em] lg:text-left lg:text-3xl"
                 onMouseMove={(e) => {
                   if (!aiHoverRef.current) return;
                   scheduleHoverGradient(aiHoverRef.current, e.clientX, e.clientY);

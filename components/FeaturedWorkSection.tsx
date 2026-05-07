@@ -90,7 +90,12 @@ export function FeaturedWorkSection() {
                   </div>
                 )}
 
-                <span className="learnmore-btn absolute bottom-4 right-4 z-20 flex items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 md:bottom-6 md:right-6">
+                <span
+                  className={`learnmore-btn absolute bottom-4 right-4 z-20 items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 md:bottom-6 md:right-6 ${src === "/videos/0417-CokeOlympicMontage.mp4" || src === "/videos/0417-SpriteZeroMontage.mp4"
+                    ? "hidden min-[960px]:flex"
+                    : "flex"
+                    }`}
+                >
                   <svg
                     width="12"
                     height="12"
@@ -134,7 +139,7 @@ export function FeaturedWorkSection() {
               >
                 <source src={visualCampaignsCard.src} type="video/mp4" />
               </video>
-              <span className="learnmore-btn absolute bottom-4 right-4 z-20 flex items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 md:bottom-6 md:right-6">
+              <span className="learnmore-btn absolute bottom-4 right-4 z-20 hidden items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 min-[960px]:flex md:bottom-6 md:right-6">
                 <svg
                   width="12"
                   height="12"
@@ -174,7 +179,7 @@ export function FeaturedWorkSection() {
               >
                 <source src={mobileExperienceCard.src} type="video/mp4" />
               </video>
-              <span className="learnmore-btn absolute bottom-4 right-4 z-20 flex items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 md:bottom-6 md:right-6">
+              <span className="learnmore-btn absolute bottom-4 right-4 z-20 hidden items-center gap-4 bg-white/40 px-6 py-3.5 backdrop-blur-md transition-all duration-500 group-hover:bg-white/60 min-[960px]:flex md:bottom-6 md:right-6">
                 <svg
                   width="12"
                   height="12"
