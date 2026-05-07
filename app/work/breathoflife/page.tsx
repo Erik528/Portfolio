@@ -101,12 +101,26 @@ export default function BreathOfLifePage() {
                 <span className="h-px flex-1 bg-neutral-300" />
               </div>
 
-              <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:gap-3">
+              <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8 lg:gap-3">
                 <CokeBreakFadeInOnView className="w-full">
                   <img src="/assets/BOL1.png" alt="Breath of Life H5 page display 1" className="w-full h-auto" />
                 </CokeBreakFadeInOnView>
                 <CokeBreakFadeInOnView delay={0.1} className="w-full">
                   <img src="/assets/BOL2.png" alt="Breath of Life H5 page display 2" className="w-full h-auto" />
+                </CokeBreakFadeInOnView>
+                <CokeBreakFadeInOnView delay={0.2} className="w-full md:flex md:h-full md:pl-6 lg:pl-8">
+                  <div className="mt-8 text-left text-[16px] leading-[1.55] text-neutral-900 md:mt-auto md:ml-auto md:max-w-[420px] md:text-[18px]">
+                    <p>
+                      Here is how it works: Users take a deep breath and blow into their phone. The phone turns the sound
+                      of the breath into a visual image using our algorithm.
+                    </p>
+                    <p className="mt-6">
+                      And then a tree appears on the screen. The bigger the tree, the stronger the lung capacity.
+                    </p>
+                    <p className="mt-6">
+                      If the lung capacity is below a certain threshold, the app will suggest the user for further checks.
+                    </p>
+                  </div>
                 </CokeBreakFadeInOnView>
               </div>
 
