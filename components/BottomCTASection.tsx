@@ -136,15 +136,38 @@ function CTAHeadline() {
 }
 
 export function BottomCTASection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const leftVideoRef = useRef<HTMLVideoElement>(null);
+  const rightVideoRef = useRef<HTMLVideoElement>(null);
+  const reduceMotion = useReducedMotion();
+  const inView = useInView(sectionRef, { amount: 0.15, margin: "30% 0px 30% 0px" });
+
+  useEffect(() => {
+    const videos = [leftVideoRef.current, rightVideoRef.current].filter(Boolean) as HTMLVideoElement[];
+    if (videos.length === 0) return;
+
+    if (reduceMotion || !inView) {
+      videos.forEach((v) => v.pause());
+      return;
+    }
+
+    videos.forEach((v) => {
+      v.muted = true;
+      const p = v.play();
+      if (p) p.catch(() => { });
+    });
+  }, [inView, reduceMotion]);
+
   return (
-    <section id="contact" className="relative overflow-hidden bg-background py-20 md:py-24 lg:py-28">
+    <section ref={sectionRef} id="contact" className="relative overflow-hidden bg-background py-20 md:py-24 lg:py-28">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-y-0 left-0 flex items-center">
           <video
-            autoPlay
             muted
             loop
             playsInline
+            preload={inView ? "auto" : "metadata"}
+            ref={leftVideoRef}
             className="-translate-x-[70%] h-[468px] w-[468px] object-contain opacity-85 saturate-125 md:-translate-x-1/2 md:h-[676px] md:w-[676px] lg:h-[806px] lg:w-[806px]"
           >
             <source src={videoSrc} type="video/mp4" />
@@ -152,10 +175,11 @@ export function BottomCTASection() {
         </div>
         <div className="absolute inset-y-0 right-0 flex items-center">
           <video
-            autoPlay
             muted
             loop
             playsInline
+            preload={inView ? "auto" : "metadata"}
+            ref={rightVideoRef}
             className="translate-x-[70%] h-[468px] w-[468px] object-contain opacity-85 saturate-125 md:translate-x-1/2 md:h-[676px] md:w-[676px] lg:h-[806px] lg:w-[806px]"
           >
             <source src={videoSrc} type="video/mp4" />

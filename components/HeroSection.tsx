@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useAnimationControls, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useAnimationControls, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import hoverStyles from "./HeroSloganHover.module.css";
 const heroVideoSrc = "/videos/liquidball.mp4";
 const easeInOutQuad = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
@@ -11,6 +11,7 @@ const amplifiedWordSizer = amplifiedWords.reduce((a, b) => (a.length >= b.length
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
+  const heroInView = useInView(containerRef, { amount: 0.1 });
   const oneVisionHoverRef = useRef<HTMLParagraphElement>(null);
   const aiHoverRef = useRef<HTMLParagraphElement>(null);
   const hoverRafIdRef = useRef<number | null>(null);
@@ -19,6 +20,7 @@ export function HeroSection() {
   const [introDone, setIntroDone] = useState(false);
   const [scrollDownReady, setScrollDownReady] = useState(false);
   const [amplifiedWordIdx, setAmplifiedWordIdx] = useState(0);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [isNarrow, setIsNarrow] = useState(() =>
     typeof window !== "undefined" ? window.matchMedia("(max-width: 767px)").matches : false
   );
@@ -30,6 +32,33 @@ export function HeroSection() {
 
   const enableHeavyVideoEffects = !reduceMotion && !isNarrow;
   const baseVideoScale = enableHeavyVideoEffects ? 1.4 : 1;
+
+  useEffect(() => {
+    const v = heroVideoRef.current;
+    if (!v) return;
+
+    if (!heroInView) {
+      v.pause();
+      return;
+    }
+
+    const tryPlay = () => {
+      v.muted = true;
+      const p = v.play();
+      if (p) p.catch(() => { });
+    };
+
+    tryPlay();
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") tryPlay();
+    };
+    window.addEventListener("focus", tryPlay);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("focus", tryPlay);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [heroInView]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -325,6 +354,7 @@ export function HeroSection() {
                   preload="auto"
                   disablePictureInPicture
                   disableRemotePlayback
+                  ref={heroVideoRef}
                   className="h-full w-full object-contain"
                 >
                   <source src={heroVideoSrc} type="video/mp4" />
