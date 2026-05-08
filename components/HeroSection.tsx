@@ -16,24 +16,26 @@ export function HeroSection() {
   const aiHoverRef = useRef<HTMLParagraphElement>(null);
   const hoverRafIdRef = useRef<number | null>(null);
   const hoverTargetRef = useRef<{ el: HTMLParagraphElement; x: number; y: number } | null>(null);
+  const [mounted, setMounted] = useState(false);
   const [introReady, setIntroReady] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const [scrollDownReady, setScrollDownReady] = useState(false);
   const [amplifiedWordIdx, setAmplifiedWordIdx] = useState(0);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
-  const [isNarrow, setIsNarrow] = useState(() =>
-    typeof window !== "undefined" ? window.matchMedia("(max-width: 767px)").matches : false
-  );
-  const [isCoarsePointer, setIsCoarsePointer] = useState(() =>
-    typeof window !== "undefined" ? window.matchMedia("(hover: none), (pointer: coarse)").matches : false
-  );
+  const [isNarrow, setIsNarrow] = useState(false);
+  const [isCoarsePointer, setIsCoarsePointer] = useState(false);
   const oneVisionWordsControls = useAnimationControls();
   const videoControls = useAnimationControls();
   const aiControls = useAnimationControls();
   const aiLettersControls = useAnimationControls();
   const borderControls = useAnimationControls();
 
-  const enableHeavyVideoEffects = !reduceMotion && !isNarrow && !isCoarsePointer;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const effectiveReduceMotion = mounted ? reduceMotion : false;
+  const enableHeavyVideoEffects = !effectiveReduceMotion && !isNarrow && !isCoarsePointer;
   const baseVideoScale = enableHeavyVideoEffects ? 1.4 : 1;
 
   useEffect(() => {
@@ -432,8 +434,9 @@ export function HeroSection() {
                       <span className={`${hoverStyles.char} ${idx < 2 ? "font-bold" : ""}`}>{ch}</span>
                     </motion.span>
                   ))}
+                  <span className="inline-block w-[0.55em] tracking-normal">{" "}</span>
                   <motion.span
-                    className="relative ml-[0.55em] inline-block align-baseline"
+                    className="relative inline-block align-baseline"
                     variants={{
                       hidden: { opacity: 0, filter: "blur(12px)" },
                       show: {

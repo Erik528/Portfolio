@@ -141,9 +141,7 @@ export function BottomCTASection() {
   const rightVideoRef = useRef<HTMLVideoElement>(null);
   const reduceMotion = useReducedMotion();
   const inView = useInView(sectionRef, { amount: 0.1, margin: "-10% 0px -10% 0px" });
-  const [isFinePointer, setIsFinePointer] = useState(() =>
-    typeof window !== "undefined" ? window.matchMedia("(hover: hover) and (pointer: fine)").matches : false
-  );
+  const [isFinePointer, setIsFinePointer] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
