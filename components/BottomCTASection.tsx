@@ -145,7 +145,7 @@ export function BottomCTASection() {
             muted
             loop
             playsInline
-            className="-translate-x-1/2 h-[468px] w-[468px] object-contain opacity-85 saturate-125 md:h-[676px] md:w-[676px] lg:h-[806px] lg:w-[806px]"
+            className="-translate-x-[70%] h-[468px] w-[468px] object-contain opacity-85 saturate-125 md:-translate-x-1/2 md:h-[676px] md:w-[676px] lg:h-[806px] lg:w-[806px]"
           >
             <source src={videoSrc} type="video/mp4" />
           </video>
@@ -156,7 +156,7 @@ export function BottomCTASection() {
             muted
             loop
             playsInline
-            className="translate-x-1/2 h-[468px] w-[468px] object-contain opacity-85 saturate-125 md:h-[676px] md:w-[676px] lg:h-[806px] lg:w-[806px]"
+            className="translate-x-[70%] h-[468px] w-[468px] object-contain opacity-85 saturate-125 md:translate-x-1/2 md:h-[676px] md:w-[676px] lg:h-[806px] lg:w-[806px]"
           >
             <source src={videoSrc} type="video/mp4" />
           </video>
