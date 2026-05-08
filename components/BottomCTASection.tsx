@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Variants } from "framer-motion";
 import { motion, useAnimationControls, useInView, useReducedMotion } from "framer-motion";
 import Image from "next/image";
@@ -140,13 +140,30 @@ export function BottomCTASection() {
   const leftVideoRef = useRef<HTMLVideoElement>(null);
   const rightVideoRef = useRef<HTMLVideoElement>(null);
   const reduceMotion = useReducedMotion();
-  const inView = useInView(sectionRef, { amount: 0.15, margin: "30% 0px 30% 0px" });
+  const inView = useInView(sectionRef, { amount: 0.1, margin: "-10% 0px -10% 0px" });
+  const [isFinePointer, setIsFinePointer] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(hover: hover) and (pointer: fine)").matches : false
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => setIsFinePointer(mql.matches);
+    update();
+    if (typeof (mql as unknown as { addEventListener?: unknown }).addEventListener === "function") {
+      mql.addEventListener("change", update);
+      return () => mql.removeEventListener("change", update);
+    }
+    const legacy = mql as unknown as { addListener?: (cb: () => void) => void; removeListener?: (cb: () => void) => void };
+    legacy.addListener?.(update);
+    return () => legacy.removeListener?.(update);
+  }, []);
 
   useEffect(() => {
     const videos = [leftVideoRef.current, rightVideoRef.current].filter(Boolean) as HTMLVideoElement[];
     if (videos.length === 0) return;
 
-    if (reduceMotion || !inView) {
+    if (reduceMotion || !isFinePointer || !inView) {
       videos.forEach((v) => v.pause());
       return;
     }
@@ -156,7 +173,7 @@ export function BottomCTASection() {
       const p = v.play();
       if (p) p.catch(() => { });
     });
-  }, [inView, reduceMotion]);
+  }, [inView, isFinePointer, reduceMotion]);
 
   return (
     <section ref={sectionRef} id="contact" className="relative overflow-hidden bg-background py-20 md:py-24 lg:py-28">

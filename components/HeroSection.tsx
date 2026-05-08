@@ -24,39 +24,55 @@ export function HeroSection() {
   const [isNarrow, setIsNarrow] = useState(() =>
     typeof window !== "undefined" ? window.matchMedia("(max-width: 767px)").matches : false
   );
+  const [isCoarsePointer, setIsCoarsePointer] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(hover: none), (pointer: coarse)").matches : false
+  );
   const oneVisionWordsControls = useAnimationControls();
   const videoControls = useAnimationControls();
   const aiControls = useAnimationControls();
   const aiLettersControls = useAnimationControls();
   const borderControls = useAnimationControls();
 
-  const enableHeavyVideoEffects = !reduceMotion && !isNarrow;
+  const enableHeavyVideoEffects = !reduceMotion && !isNarrow && !isCoarsePointer;
   const baseVideoScale = enableHeavyVideoEffects ? 1.4 : 1;
 
   useEffect(() => {
     const v = heroVideoRef.current;
     if (!v) return;
 
-    if (!heroInView) {
-      v.pause();
-      return;
-    }
-
     const tryPlay = () => {
+      if (!heroInView) return;
+      if (document.visibilityState !== "visible") return;
       v.muted = true;
       const p = v.play();
       if (p) p.catch(() => { });
     };
 
+    if (!heroInView) {
+      v.pause();
+      return;
+    }
+
     tryPlay();
     const onVisibility = () => {
       if (document.visibilityState === "visible") tryPlay();
     };
+    const onWaiting = () => window.setTimeout(tryPlay, 180);
     window.addEventListener("focus", tryPlay);
     document.addEventListener("visibilitychange", onVisibility);
+    v.addEventListener("loadeddata", tryPlay);
+    v.addEventListener("canplay", tryPlay);
+    v.addEventListener("waiting", onWaiting);
+    v.addEventListener("stalled", onWaiting);
+    v.addEventListener("pause", onWaiting);
     return () => {
       window.removeEventListener("focus", tryPlay);
       document.removeEventListener("visibilitychange", onVisibility);
+      v.removeEventListener("loadeddata", tryPlay);
+      v.removeEventListener("canplay", tryPlay);
+      v.removeEventListener("waiting", onWaiting);
+      v.removeEventListener("stalled", onWaiting);
+      v.removeEventListener("pause", onWaiting);
     };
   }, [heroInView]);
 
@@ -70,6 +86,20 @@ export function HeroSection() {
       return () => mql.removeEventListener("change", update);
     }
 
+    const legacy = mql as unknown as { addListener?: (cb: () => void) => void; removeListener?: (cb: () => void) => void };
+    legacy.addListener?.(update);
+    return () => legacy.removeListener?.(update);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia("(hover: none), (pointer: coarse)");
+    const update = () => setIsCoarsePointer(mql.matches);
+    update();
+    if (typeof (mql as unknown as { addEventListener?: unknown }).addEventListener === "function") {
+      mql.addEventListener("change", update);
+      return () => mql.removeEventListener("change", update);
+    }
     const legacy = mql as unknown as { addListener?: (cb: () => void) => void; removeListener?: (cb: () => void) => void };
     legacy.addListener?.(update);
     return () => legacy.removeListener?.(update);
@@ -254,6 +284,7 @@ export function HeroSection() {
     enableHeavyVideoEffects,
     introDone,
     introReady,
+    isCoarsePointer,
     oneVisionWordsControls,
     videoControls,
   ]);
