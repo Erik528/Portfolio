@@ -3,13 +3,13 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useAnimationControls, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import hoverStyles from "./HeroSloganHover.module.css";
-const heroVideoSrc = "/videos/liquidball.mp4";
-const easeInOutQuad = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+const heroVideoSrc = "/videos/11May.mp4";
 const amplifiedWords = ["AMPLIFIED", "ENHANCED", "POWERED", "EXPANDED"] as const;
 const amplifiedWordSizer = amplifiedWords.reduce((a, b) => (a.length >= b.length ? a : b));
 
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const bodyOverflowRef = useRef<string>("");
   const reduceMotion = useReducedMotion();
   const heroInView = useInView(containerRef, { amount: 0.1 });
   const oneVisionHoverRef = useRef<HTMLParagraphElement>(null);
@@ -21,7 +21,12 @@ export function HeroSection() {
   const [introDone, setIntroDone] = useState(false);
   const [scrollDownReady, setScrollDownReady] = useState(false);
   const [amplifiedWordIdx, setAmplifiedWordIdx] = useState(0);
+  const [videoEnded, setVideoEnded] = useState(false);
+  const [hasEntered, setHasEntered] = useState(false);
+  const [exitInProgress, setExitInProgress] = useState(false);
+  const [isTransformed, setIsTransformed] = useState(false);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const heroVideoEndedRef = useRef(false);
   const [isNarrow, setIsNarrow] = useState(false);
   const [isCoarsePointer, setIsCoarsePointer] = useState(false);
   const oneVisionWordsControls = useAnimationControls();
@@ -36,7 +41,14 @@ export function HeroSection() {
 
   const effectiveReduceMotion = mounted ? reduceMotion : false;
   const enableHeavyVideoEffects = !effectiveReduceMotion && !isNarrow && !isCoarsePointer;
-  const baseVideoScale = enableHeavyVideoEffects ? 1.4 : 1;
+
+  useLayoutEffect(() => {
+    if (!bodyOverflowRef.current) bodyOverflowRef.current = document.body.style.overflow;
+    document.body.style.overflow = hasEntered ? bodyOverflowRef.current : "hidden";
+    return () => {
+      document.body.style.overflow = bodyOverflowRef.current;
+    };
+  }, [hasEntered]);
 
   useEffect(() => {
     const v = heroVideoRef.current;
@@ -45,6 +57,7 @@ export function HeroSection() {
     const tryPlay = () => {
       if (!heroInView) return;
       if (document.visibilityState !== "visible") return;
+      if (heroVideoEndedRef.current || v.ended) return;
       v.muted = true;
       const p = v.play();
       if (p) p.catch(() => { });
@@ -59,7 +72,14 @@ export function HeroSection() {
     const onVisibility = () => {
       if (document.visibilityState === "visible") tryPlay();
     };
-    const onWaiting = () => window.setTimeout(tryPlay, 180);
+    const onWaiting = () => {
+      if (heroVideoEndedRef.current || v.ended) return;
+      window.setTimeout(tryPlay, 180);
+    };
+    const onEnded = () => {
+      heroVideoEndedRef.current = true;
+      setVideoEnded(true);
+    };
     window.addEventListener("focus", tryPlay);
     document.addEventListener("visibilitychange", onVisibility);
     v.addEventListener("loadeddata", tryPlay);
@@ -67,6 +87,7 @@ export function HeroSection() {
     v.addEventListener("waiting", onWaiting);
     v.addEventListener("stalled", onWaiting);
     v.addEventListener("pause", onWaiting);
+    v.addEventListener("ended", onEnded);
     return () => {
       window.removeEventListener("focus", tryPlay);
       document.removeEventListener("visibilitychange", onVisibility);
@@ -75,8 +96,72 @@ export function HeroSection() {
       v.removeEventListener("waiting", onWaiting);
       v.removeEventListener("stalled", onWaiting);
       v.removeEventListener("pause", onWaiting);
+      v.removeEventListener("ended", onEnded);
     };
   }, [heroInView]);
+
+  useEffect(() => {
+    if (!videoEnded) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (exitInProgress) return;
+
+      if (!hasEntered) {
+        e.preventDefault();
+        if (e.deltaY <= 0) return;
+        setExitInProgress(true);
+        setScrollDownReady(false);
+        void (async () => {
+          await videoControls.start({
+            rotate: -45,
+            scale: 1.5,
+            transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+          });
+          setIsTransformed(true);
+          setHasEntered(true);
+          setExitInProgress(false);
+          document.body.style.overflow = bodyOverflowRef.current;
+        })();
+        return;
+      }
+
+      if (!heroInView) return;
+
+      if (!isTransformed) {
+        if (e.deltaY <= 0) return;
+        e.preventDefault();
+        setExitInProgress(true);
+        void (async () => {
+          await videoControls.start({
+            rotate: -45,
+            scale: 1.5,
+            transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+          });
+          setIsTransformed(true);
+          setExitInProgress(false);
+        })();
+        return;
+      }
+
+      if (e.deltaY >= 0) return;
+      e.preventDefault();
+      setExitInProgress(true);
+      void (async () => {
+        await videoControls.start({
+          rotate: 0,
+          scale: 1,
+          transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
+        });
+        setIsTransformed(false);
+        setExitInProgress(false);
+      })();
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      window.removeEventListener("wheel", onWheel as unknown as EventListener);
+    };
+  }, [exitInProgress, hasEntered, heroInView, isTransformed, videoControls, videoEnded]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -159,8 +244,6 @@ export function HeroSection() {
     offset: ["start start", "end end"],
   });
 
-  const scale = useTransform(scrollYProgress, [0, 0.85], [1.4, 1.8], { ease: easeInOutQuad });
-  const rotate = useTransform(scrollYProgress, [0, 0.85], [0, 45], { ease: easeInOutQuad });
   const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.9, 1], [1, 1, 0]);
 
   useEffect(() => {
@@ -191,17 +274,23 @@ export function HeroSection() {
     if (hash === "#featured-work") {
       borderControls.set({ opacity: 1 });
       oneVisionWordsControls.set("show");
+      videoControls.set({
+        opacity: 1,
+        rotate: 0,
+        scale: 1,
+        filter: "blur(0px)",
+      });
       aiControls.set({ opacity: 1 });
       aiLettersControls.set("show");
       setIntroDone(true);
       setScrollDownReady(true);
+      setHasEntered(true);
+      setVideoEnded(true);
+      setIsTransformed(false);
       return;
     }
 
     setScrollDownReady(false);
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     window.scrollTo({ top: 0 });
 
     const run = async () => {
@@ -209,8 +298,8 @@ export function HeroSection() {
       await oneVisionWordsControls.set("hidden");
       await videoControls.set({
         opacity: 0,
-        scale: baseVideoScale,
         rotate: 0,
+        scale: 1,
         filter: enableHeavyVideoEffects ? "blur(18px)" : "blur(0px)",
       });
       await aiControls.set({ opacity: 0 });
@@ -244,8 +333,8 @@ export function HeroSection() {
       const videoTimeoutId = window.setTimeout(() => {
         const videoPromise = videoControls.start({
           opacity: [0, 1],
-          scale: baseVideoScale,
           rotate: 0,
+          scale: 1,
           ...(enableHeavyVideoEffects ? { filter: ["blur(18px)", "blur(0px)"] } : { filter: "blur(0px)" }),
           transition: { duration: 1.45, ease: [0.16, 1, 0.3, 1] },
         });
@@ -271,14 +360,9 @@ export function HeroSection() {
       window.clearTimeout(aiTimeoutId);
 
       setIntroDone(true);
-      document.body.style.overflow = previousOverflow;
     };
 
     run();
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
   }, [
     aiControls,
     aiLettersControls,
@@ -298,8 +382,26 @@ export function HeroSection() {
       className="relative h-[260vh] w-full"
     >
       {/* Sticky container that stays pinned while scrolling */}
-      <div className="sticky top-16 h-[calc(100vh-4rem)] w-full overflow-hidden bg-background">
-        <div className="container-custom relative flex h-full flex-col justify-center px-4 md:px-6 lg:px-8">
+      <div className="sticky top-16 relative h-[calc(100vh-4rem)] w-full overflow-hidden bg-[#f5f3ef]">
+        <motion.div
+          initial={{ opacity: 0, scale: 1, rotate: 0, filter: enableHeavyVideoEffects ? "blur(18px)" : "blur(0px)" }}
+          animate={videoControls}
+          className="absolute inset-0 z-0"
+        >
+          <video
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            disablePictureInPicture
+            disableRemotePlayback
+            ref={heroVideoRef}
+            className="h-full w-full object-contain object-center 2xl:object-cover"
+          >
+            <source src={heroVideoSrc} type="video/mp4" />
+          </video>
+        </motion.div>
+        <div className="container-custom relative z-10 flex h-full flex-col justify-center px-4 md:px-6 lg:px-8">
 
           {/* Decorative plus signs - Keep z-index high */}
           <motion.div
@@ -315,12 +417,12 @@ export function HeroSection() {
             </div>
           </motion.div>
 
-          <div className="relative -translate-y-10 grid grid-cols-1 items-center gap-y-8 md:-translate-y-8 md:grid-cols-2 md:gap-x-8 md:gap-y-10 lg:grid-cols-[1.2fr_auto_1.2fr] lg:gap-y-12 lg:-translate-y-10">
+          <div className="relative -translate-y-10 grid grid-cols-1 items-center gap-y-8 sm:grid-cols-2 sm:gap-x-8 md:-translate-y-8 md:gap-y-10 lg:gap-y-16 lg:-translate-y-10">
             {/* Left Slogan - High z-index */}
-            <div className="relative z-10 col-start-1 row-start-1 flex justify-center md:justify-start lg:justify-end">
+            <div className="relative z-10 col-start-1 row-start-1 flex justify-center -translate-x-[95px] translate-y-10 sm:translate-x-0 sm:translate-y-0 md:-translate-y-2">
               <p
                 ref={oneVisionHoverRef}
-                className="whitespace-nowrap text-center text-base font-medium uppercase tracking-[0.22em] text-neutral-800 sm:text-lg md:text-left md:text-2xl md:tracking-[0.3em] lg:text-right lg:text-3xl"
+                className="whitespace-nowrap text-center text-base font-medium uppercase tracking-[0.22em] text-neutral-800 sm:text-lg md:text-2xl md:tracking-[0.3em] lg:text-3xl"
                 onMouseMove={(e) => {
                   if (!oneVisionHoverRef.current) return;
                   scheduleHoverGradient(oneVisionHoverRef.current, e.clientX, e.clientY);
@@ -360,50 +462,15 @@ export function HeroSection() {
               </p>
             </div>
 
-            {/* Central Video Container - Low z-index */}
-            <div className="relative z-0 col-span-1 col-start-1 row-start-3 mx-auto w-full max-w-[560px]  sm:translate-y-6 md:col-span-2 md:col-start-1 md:row-start-2 md:translate-y-0 lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:max-w-[700px]">
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  scale: baseVideoScale,
-                  rotate: 0,
-                  filter: enableHeavyVideoEffects ? "blur(18px)" : "blur(0px)",
-                }}
-                animate={
-                  introDone
-                    ? enableHeavyVideoEffects
-                      ? { opacity: 1, filter: "blur(0px)" }
-                      : { opacity: 1, filter: "blur(0px)", scale: 1, rotate: 0 }
-                    : videoControls
-                }
-                style={introDone && enableHeavyVideoEffects ? { rotate, scale } : undefined}
-                className="relative aspect-[4/3] w-full overflow-visible md:aspect-auto md:h-[480px] lg:h-[560px]"
-              >
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  disablePictureInPicture
-                  disableRemotePlayback
-                  ref={heroVideoRef}
-                  className="h-full w-full object-contain"
-                >
-                  <source src={heroVideoSrc} type="video/mp4" />
-                </video>
-              </motion.div>
-            </div>
-
             {/* Right Slogan - High z-index */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={aiControls}
-              className="relative z-10 col-start-1 row-start-2 flex justify-center md:col-start-2 md:row-start-1 md:justify-end lg:col-start-3 lg:justify-start"
+              className="relative z-10 col-start-1 row-start-2 flex justify-center translate-x-[125px] translate-y-16 sm:col-start-2 sm:row-start-1 sm:translate-x-0 sm:translate-y-0 md:-translate-x-8 md:translate-y-22 lg:translate-x-[8rem]"
             >
               <p
                 ref={aiHoverRef}
-                className="whitespace-nowrap text-center text-base font-medium uppercase tracking-[0.22em] text-neutral-800 sm:text-lg md:text-right md:text-2xl md:tracking-[0.3em] lg:text-left lg:text-3xl"
+                className="whitespace-nowrap text-center text-base font-medium uppercase tracking-[0.22em] text-neutral-800 sm:text-lg md:text-2xl md:tracking-[0.3em] lg:text-3xl"
                 onMouseMove={(e) => {
                   if (!aiHoverRef.current) return;
                   scheduleHoverGradient(aiHoverRef.current, e.clientX, e.clientY);
@@ -518,7 +585,7 @@ export function HeroSection() {
           </div>
 
           {/* Scroll Down Indicator - Absolute position unchanged */}
-          {scrollDownReady ? (
+          {scrollDownReady && !hasEntered && !exitInProgress ? (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
