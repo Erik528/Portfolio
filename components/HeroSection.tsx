@@ -43,10 +43,10 @@ export function HeroSection() {
   const effectiveReduceMotion = mounted ? reduceMotion : false;
   const enableHeavyVideoEffects = !effectiveReduceMotion && !isNarrow && !isCoarsePointer;
   const downScale = isNarrow || isCoarsePointer ? 2.6 : 1.5;
-  const below960VideoOffsetX = isBelow960 ? 320 : 0;
-  const below960VideoOffsetY = isBelow960 ? 420 : 0;
+  const below960VideoOffsetX = isBelow960 ? 10 : 0;
+  const below960VideoOffsetY = isBelow960 ? -90 : 0;
   const defaultVideoRotate = !effectiveReduceMotion && isBelow960 ? -30 : 0;
-  const defaultVideoScale = !effectiveReduceMotion && isBelow960 ? 2.8 : 1;
+  const defaultVideoScale = !effectiveReduceMotion && isBelow960 ? 2.5 : 1;
   const transformedVideoRotate = isBelow960 ? defaultVideoRotate : -45;
   const transformedVideoScale = isBelow960 ? defaultVideoScale : downScale;
 
@@ -522,7 +522,7 @@ export function HeroSection() {
         <motion.div
           initial={{ opacity: 0, scale: defaultVideoScale, rotate: defaultVideoRotate, x: below960VideoOffsetX, y: below960VideoOffsetY, filter: enableHeavyVideoEffects ? "blur(18px)" : "blur(0px)" }}
           animate={videoControls}
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 origin-center"
         >
           <video
             autoPlay
@@ -532,7 +532,7 @@ export function HeroSection() {
             disablePictureInPicture
             disableRemotePlayback
             ref={heroVideoRef}
-            className="h-full w-full object-contain object-top sm:object-center 2xl:object-cover"
+            className="h-full w-full object-contain object-center 2xl:object-cover"
           >
             <source src={heroVideoSrc} type="video/mp4" />
           </video>
