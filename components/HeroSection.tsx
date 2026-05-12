@@ -43,10 +43,10 @@ export function HeroSection() {
   const effectiveReduceMotion = mounted ? reduceMotion : false;
   const enableHeavyVideoEffects = !effectiveReduceMotion && !isNarrow && !isCoarsePointer;
   const downScale = isNarrow || isCoarsePointer ? 2.6 : 1.5;
-  const below960VideoOffsetX = isBelow960 ? 190 : 0;
-  const below960VideoOffsetY = isBelow960 ? 200 : 0;
+  const below960VideoOffsetX = isBelow960 ? 240 : 0;
+  const below960VideoOffsetY = isBelow960 ? 290 : 0;
   const defaultVideoRotate = !effectiveReduceMotion && isBelow960 ? -30 : 0;
-  const defaultVideoScale = !effectiveReduceMotion && isBelow960 ? 1.4 : 1;
+  const defaultVideoScale = !effectiveReduceMotion && isBelow960 ? 1.8 : 1;
   const transformedVideoRotate = isBelow960 ? defaultVideoRotate : -45;
   const transformedVideoScale = isBelow960 ? defaultVideoScale : downScale;
 
