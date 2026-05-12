@@ -390,7 +390,7 @@ export function HeroSection() {
       className="relative h-[260vh] w-full"
     >
       {/* Sticky container that stays pinned while scrolling */}
-      <div className="sticky top-16 relative h-[calc(100vh-4rem)] w-full overflow-hidden bg-[#f5f3ef]">
+      <div className="sticky top-0 md:top-16 relative h-screen md:h-[calc(100vh-4rem)] w-full overflow-hidden bg-[#f5f3ef]">
         <motion.div
           initial={{ opacity: 0, scale: 1, rotate: 0, filter: enableHeavyVideoEffects ? "blur(18px)" : "blur(0px)" }}
           animate={videoControls}
