@@ -28,6 +28,7 @@ export function HeroSection() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const heroVideoEndedRef = useRef(false);
   const [isNarrow, setIsNarrow] = useState(false);
+  const [isBelow960, setIsBelow960] = useState(false);
   const [isCoarsePointer, setIsCoarsePointer] = useState(false);
   const oneVisionWordsControls = useAnimationControls();
   const videoControls = useAnimationControls();
@@ -41,14 +42,21 @@ export function HeroSection() {
 
   const effectiveReduceMotion = mounted ? reduceMotion : false;
   const enableHeavyVideoEffects = !effectiveReduceMotion && !isNarrow && !isCoarsePointer;
+  const downScale = isNarrow || isCoarsePointer ? 2.6 : 1.5;
+  const below960VideoOffsetX = isBelow960 ? 190 : 0;
+  const below960VideoOffsetY = isBelow960 ? 200 : 0;
+  const defaultVideoRotate = !effectiveReduceMotion && isBelow960 ? -30 : 0;
+  const defaultVideoScale = !effectiveReduceMotion && isBelow960 ? 1.4 : 1;
+  const transformedVideoRotate = isBelow960 ? defaultVideoRotate : -45;
+  const transformedVideoScale = isBelow960 ? defaultVideoScale : downScale;
 
   useLayoutEffect(() => {
     if (!bodyOverflowRef.current) bodyOverflowRef.current = document.body.style.overflow;
-    document.body.style.overflow = hasEntered || isNarrow || isCoarsePointer || effectiveReduceMotion ? bodyOverflowRef.current : "hidden";
+    document.body.style.overflow = hasEntered ? bodyOverflowRef.current : "hidden";
     return () => {
       document.body.style.overflow = bodyOverflowRef.current;
     };
-  }, [effectiveReduceMotion, hasEntered, isCoarsePointer, isNarrow]);
+  }, [hasEntered]);
 
   useEffect(() => {
     const v = heroVideoRef.current;
@@ -102,7 +110,6 @@ export function HeroSection() {
 
   useEffect(() => {
     if (!videoEnded) return;
-    if (effectiveReduceMotion || isNarrow || isCoarsePointer) return;
 
     const onWheel = (e: WheelEvent) => {
       if (exitInProgress) return;
@@ -114,8 +121,10 @@ export function HeroSection() {
         setScrollDownReady(false);
         void (async () => {
           await videoControls.start({
-            rotate: -45,
-            scale: 1.5,
+            rotate: transformedVideoRotate,
+            scale: transformedVideoScale,
+            x: below960VideoOffsetX,
+            y: below960VideoOffsetY,
             transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
           });
           setIsTransformed(true);
@@ -134,8 +143,10 @@ export function HeroSection() {
         setExitInProgress(true);
         void (async () => {
           await videoControls.start({
-            rotate: -45,
-            scale: 1.5,
+            rotate: transformedVideoRotate,
+            scale: transformedVideoScale,
+            x: below960VideoOffsetX,
+            y: below960VideoOffsetY,
             transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
           });
           setIsTransformed(true);
@@ -149,8 +160,10 @@ export function HeroSection() {
       setExitInProgress(true);
       void (async () => {
         await videoControls.start({
-          rotate: 0,
-          scale: 1,
+          rotate: defaultVideoRotate,
+          scale: defaultVideoScale,
+          x: below960VideoOffsetX,
+          y: below960VideoOffsetY,
           transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
         });
         setIsTransformed(false);
@@ -162,18 +175,109 @@ export function HeroSection() {
     return () => {
       window.removeEventListener("wheel", onWheel as unknown as EventListener);
     };
-  }, [effectiveReduceMotion, exitInProgress, hasEntered, heroInView, isCoarsePointer, isNarrow, isTransformed, videoControls, videoEnded]);
+  }, [below960VideoOffsetX, below960VideoOffsetY, defaultVideoRotate, defaultVideoScale, exitInProgress, hasEntered, heroInView, isBelow960, isTransformed, transformedVideoRotate, transformedVideoScale, videoControls, videoEnded]);
 
   useEffect(() => {
-    if (!effectiveReduceMotion && !isNarrow && !isCoarsePointer) return;
-    setExitInProgress(false);
-    setIsTransformed(false);
-    videoControls.set({ rotate: 0, scale: 1 });
-  }, [effectiveReduceMotion, isCoarsePointer, isNarrow, videoControls]);
+    if (!videoEnded) return;
+    if (!isCoarsePointer) return;
 
-  useLayoutEffect(() => {
+    let startY = 0;
+    let tracking = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (exitInProgress) return;
+      if (e.touches.length !== 1) return;
+      tracking = true;
+      startY = e.touches[0]?.clientY ?? 0;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!tracking) return;
+      if (exitInProgress) return;
+      if (e.touches.length !== 1) return;
+
+      const y = e.touches[0]?.clientY ?? startY;
+      const dy = y - startY;
+
+      if (!hasEntered) {
+        if (dy > -32) return;
+        e.preventDefault();
+        tracking = false;
+        setExitInProgress(true);
+        setScrollDownReady(false);
+        void (async () => {
+          await videoControls.start({
+            rotate: transformedVideoRotate,
+            scale: transformedVideoScale,
+            x: below960VideoOffsetX,
+            y: below960VideoOffsetY,
+            transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+          });
+          setIsTransformed(true);
+          setHasEntered(true);
+          setExitInProgress(false);
+          document.body.style.overflow = bodyOverflowRef.current;
+        })();
+        return;
+      }
+
+      if (!heroInView) return;
+
+      if (!isTransformed) {
+        if (dy > -32) return;
+        e.preventDefault();
+        tracking = false;
+        setExitInProgress(true);
+        void (async () => {
+          await videoControls.start({
+            rotate: transformedVideoRotate,
+            scale: transformedVideoScale,
+            x: below960VideoOffsetX,
+            y: below960VideoOffsetY,
+            transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+          });
+          setIsTransformed(true);
+          setExitInProgress(false);
+        })();
+        return;
+      }
+
+      if (dy < 32) return;
+      e.preventDefault();
+      tracking = false;
+      setExitInProgress(true);
+      void (async () => {
+        await videoControls.start({
+          rotate: defaultVideoRotate,
+          scale: defaultVideoScale,
+          x: below960VideoOffsetX,
+          y: below960VideoOffsetY,
+          transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
+        });
+        setIsTransformed(false);
+        setExitInProgress(false);
+      })();
+    };
+
+    const onTouchEnd = () => {
+      tracking = false;
+    };
+
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart as unknown as EventListener);
+      window.removeEventListener("touchmove", onTouchMove as unknown as EventListener);
+      window.removeEventListener("touchend", onTouchEnd as unknown as EventListener);
+      window.removeEventListener("touchcancel", onTouchEnd as unknown as EventListener);
+    };
+  }, [below960VideoOffsetX, below960VideoOffsetY, defaultVideoRotate, defaultVideoScale, exitInProgress, hasEntered, heroInView, isBelow960, isCoarsePointer, isTransformed, transformedVideoRotate, transformedVideoScale, videoControls, videoEnded]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
-    const mql = window.matchMedia("(max-width: 768px)");
+    const mql = window.matchMedia("(max-width: 767px)");
     const update = () => setIsNarrow(mql.matches);
     update();
     if (typeof (mql as unknown as { addEventListener?: unknown }).addEventListener === "function") {
@@ -186,7 +290,21 @@ export function HeroSection() {
     return () => legacy.removeListener?.(update);
   }, []);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia("(max-width: 959px)");
+    const update = () => setIsBelow960(mql.matches);
+    update();
+    if (typeof (mql as unknown as { addEventListener?: unknown }).addEventListener === "function") {
+      mql.addEventListener("change", update);
+      return () => mql.removeEventListener("change", update);
+    }
+    const legacy = mql as unknown as { addListener?: (cb: () => void) => void; removeListener?: (cb: () => void) => void };
+    legacy.addListener?.(update);
+    return () => legacy.removeListener?.(update);
+  }, []);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
     const mql = window.matchMedia("(hover: none), (pointer: coarse)");
     const update = () => setIsCoarsePointer(mql.matches);
@@ -284,8 +402,10 @@ export function HeroSection() {
       oneVisionWordsControls.set("show");
       videoControls.set({
         opacity: 1,
-        rotate: 0,
-        scale: 1,
+        rotate: defaultVideoRotate,
+        scale: defaultVideoScale,
+        x: below960VideoOffsetX,
+        y: below960VideoOffsetY,
         filter: "blur(0px)",
       });
       aiControls.set({ opacity: 1 });
@@ -306,8 +426,10 @@ export function HeroSection() {
       await oneVisionWordsControls.set("hidden");
       await videoControls.set({
         opacity: 0,
-        rotate: 0,
-        scale: 1,
+        rotate: defaultVideoRotate,
+        scale: defaultVideoScale,
+        x: below960VideoOffsetX,
+        y: below960VideoOffsetY,
         filter: enableHeavyVideoEffects ? "blur(18px)" : "blur(0px)",
       });
       await aiControls.set({ opacity: 0 });
@@ -341,8 +463,10 @@ export function HeroSection() {
       const videoTimeoutId = window.setTimeout(() => {
         const videoPromise = videoControls.start({
           opacity: [0, 1],
-          rotate: 0,
-          scale: 1,
+          rotate: defaultVideoRotate,
+          scale: defaultVideoScale,
+          x: below960VideoOffsetX,
+          y: below960VideoOffsetY,
           ...(enableHeavyVideoEffects ? { filter: ["blur(18px)", "blur(0px)"] } : { filter: "blur(0px)" }),
           transition: { duration: 1.45, ease: [0.16, 1, 0.3, 1] },
         });
@@ -374,7 +498,11 @@ export function HeroSection() {
   }, [
     aiControls,
     aiLettersControls,
+    below960VideoOffsetX,
+    below960VideoOffsetY,
     borderControls,
+    defaultVideoRotate,
+    defaultVideoScale,
     enableHeavyVideoEffects,
     introDone,
     introReady,
@@ -390,9 +518,9 @@ export function HeroSection() {
       className="relative h-[260vh] w-full"
     >
       {/* Sticky container that stays pinned while scrolling */}
-      <div className="sticky top-0 md:top-16 relative h-screen md:h-[calc(100vh-4rem)] w-full overflow-hidden bg-[#f5f3ef]">
+      <div className="sticky top-16 relative h-[calc(100vh-4rem)] w-full overflow-hidden bg-[#f5f3ef]">
         <motion.div
-          initial={{ opacity: 0, scale: 1, rotate: 0, filter: enableHeavyVideoEffects ? "blur(18px)" : "blur(0px)" }}
+          initial={{ opacity: 0, scale: defaultVideoScale, rotate: defaultVideoRotate, x: below960VideoOffsetX, y: below960VideoOffsetY, filter: enableHeavyVideoEffects ? "blur(18px)" : "blur(0px)" }}
           animate={videoControls}
           className="absolute inset-0 z-0"
         >
@@ -404,12 +532,12 @@ export function HeroSection() {
             disablePictureInPicture
             disableRemotePlayback
             ref={heroVideoRef}
-            className="h-full w-full object-contain object-center 2xl:object-cover"
+            className="h-full w-full object-contain object-top sm:object-center 2xl:object-cover"
           >
             <source src={heroVideoSrc} type="video/mp4" />
           </video>
         </motion.div>
-        <div className="container-custom relative z-10 flex h-full flex-col justify-center px-4 md:px-6 lg:px-8">
+        <div className="container-custom relative z-10 flex h-full flex-col justify-center -translate-y-20 px-4 sm:-translate-y-10 md:translate-y-0 md:px-6 lg:px-8">
 
           {/* Decorative plus signs - Keep z-index high */}
           <motion.div
@@ -474,7 +602,7 @@ export function HeroSection() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={aiControls}
-              className="relative z-10 col-start-1 row-start-2 flex justify-center translate-x-[70px] translate-y-16 sm:col-start-2 sm:row-start-1 sm:translate-x-0 sm:translate-y-0 md:-translate-x-8 md:translate-y-[5.5rem] lg:translate-x-[8rem]"
+              className="relative z-10 col-start-1 row-start-2 flex justify-center translate-x-[105px] translate-y-16 sm:col-start-2 sm:row-start-1 sm:translate-x-0 sm:translate-y-0 md:-translate-x-8 md:translate-y-[5.5rem] lg:translate-x-[8rem]"
             >
               <p
                 ref={aiHoverRef}
