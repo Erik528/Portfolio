@@ -164,6 +164,98 @@ export function HeroSection() {
   }, [exitInProgress, hasEntered, heroInView, isTransformed, videoControls, videoEnded]);
 
   useEffect(() => {
+    if (!videoEnded) return;
+    if (!isCoarsePointer) return;
+
+    let startY = 0;
+    let tracking = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (exitInProgress) return;
+      if (e.touches.length !== 1) return;
+      tracking = true;
+      startY = e.touches[0]?.clientY ?? 0;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!tracking) return;
+      if (exitInProgress) return;
+      if (e.touches.length !== 1) return;
+
+      const y = e.touches[0]?.clientY ?? startY;
+      const dy = y - startY;
+
+      if (!hasEntered) {
+        if (dy > -32) return;
+        e.preventDefault();
+        tracking = false;
+        setExitInProgress(true);
+        setScrollDownReady(false);
+        void (async () => {
+          await videoControls.start({
+            rotate: -45,
+            scale: 1.5,
+            transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+          });
+          setIsTransformed(true);
+          setHasEntered(true);
+          setExitInProgress(false);
+          document.body.style.overflow = bodyOverflowRef.current;
+        })();
+        return;
+      }
+
+      if (!heroInView) return;
+
+      if (!isTransformed) {
+        if (dy > -32) return;
+        e.preventDefault();
+        tracking = false;
+        setExitInProgress(true);
+        void (async () => {
+          await videoControls.start({
+            rotate: -45,
+            scale: 1.5,
+            transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+          });
+          setIsTransformed(true);
+          setExitInProgress(false);
+        })();
+        return;
+      }
+
+      if (dy < 32) return;
+      e.preventDefault();
+      tracking = false;
+      setExitInProgress(true);
+      void (async () => {
+        await videoControls.start({
+          rotate: 0,
+          scale: 1,
+          transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
+        });
+        setIsTransformed(false);
+        setExitInProgress(false);
+      })();
+    };
+
+    const onTouchEnd = () => {
+      tracking = false;
+    };
+
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart as unknown as EventListener);
+      window.removeEventListener("touchmove", onTouchMove as unknown as EventListener);
+      window.removeEventListener("touchend", onTouchEnd as unknown as EventListener);
+      window.removeEventListener("touchcancel", onTouchEnd as unknown as EventListener);
+    };
+  }, [exitInProgress, hasEntered, heroInView, isCoarsePointer, isTransformed, videoControls, videoEnded]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
     const mql = window.matchMedia("(max-width: 767px)");
     const update = () => setIsNarrow(mql.matches);
@@ -401,7 +493,7 @@ export function HeroSection() {
             <source src={heroVideoSrc} type="video/mp4" />
           </video>
         </motion.div>
-        <div className="container-custom relative z-10 flex h-full flex-col justify-center px-4 md:px-6 lg:px-8">
+        <div className="container-custom relative z-10 flex h-full flex-col justify-center -translate-y-8 px-4 sm:-translate-y-4 md:translate-y-0 md:px-6 lg:px-8">
 
           {/* Decorative plus signs - Keep z-index high */}
           <motion.div
