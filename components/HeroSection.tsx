@@ -16,6 +16,7 @@ export function HeroSection() {
   const aiHoverRef = useRef<HTMLParagraphElement>(null);
   const hoverRafIdRef = useRef<number | null>(null);
   const hoverTargetRef = useRef<{ el: HTMLParagraphElement; x: number; y: number } | null>(null);
+  const pendingScrollDownRef = useRef(0);
   const [mounted, setMounted] = useState(false);
   const [introReady, setIntroReady] = useState(false);
   const [introDone, setIntroDone] = useState(false);
@@ -112,11 +113,16 @@ export function HeroSection() {
     if (!videoEnded) return;
 
     const onWheel = (e: WheelEvent) => {
-      if (exitInProgress) return;
+      if (exitInProgress) {
+        if (e.deltaY > 0) pendingScrollDownRef.current += e.deltaY;
+        e.preventDefault();
+        return;
+      }
 
       if (!hasEntered) {
         e.preventDefault();
         if (e.deltaY <= 0) return;
+        pendingScrollDownRef.current += e.deltaY;
         setExitInProgress(true);
         setScrollDownReady(false);
         void (async () => {
@@ -131,15 +137,32 @@ export function HeroSection() {
           setHasEntered(true);
           setExitInProgress(false);
           document.body.style.overflow = bodyOverflowRef.current;
+          const pending = pendingScrollDownRef.current;
+          pendingScrollDownRef.current = 0;
+          if (pending > 0) window.scrollBy({ top: pending, left: 0, behavior: "auto" });
         })();
         return;
       }
 
       if (!heroInView) return;
 
+      if (isTransformed && e.deltaY > 0) {
+        const el = containerRef.current;
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY;
+          const end = top + el.offsetHeight - window.innerHeight;
+          if (window.scrollY < end - 1) {
+            e.preventDefault();
+            window.scrollTo({ top: end, behavior: "auto" });
+            return;
+          }
+        }
+      }
+
       if (!isTransformed) {
         if (e.deltaY <= 0) return;
         e.preventDefault();
+        pendingScrollDownRef.current += e.deltaY;
         setExitInProgress(true);
         void (async () => {
           await videoControls.start({
@@ -151,6 +174,9 @@ export function HeroSection() {
           });
           setIsTransformed(true);
           setExitInProgress(false);
+          const pending = pendingScrollDownRef.current;
+          pendingScrollDownRef.current = 0;
+          if (pending > 0) window.scrollBy({ top: pending, left: 0, behavior: "auto" });
         })();
         return;
       }
@@ -193,7 +219,10 @@ export function HeroSection() {
 
     const onTouchMove = (e: TouchEvent) => {
       if (!tracking) return;
-      if (exitInProgress) return;
+      if (exitInProgress) {
+        e.preventDefault();
+        return;
+      }
       if (e.touches.length !== 1) return;
 
       const y = e.touches[0]?.clientY ?? startY;
@@ -205,6 +234,7 @@ export function HeroSection() {
         tracking = false;
         setExitInProgress(true);
         setScrollDownReady(false);
+        pendingScrollDownRef.current += Math.max(0, -dy);
         void (async () => {
           await videoControls.start({
             rotate: transformedVideoRotate,
@@ -217,6 +247,9 @@ export function HeroSection() {
           setHasEntered(true);
           setExitInProgress(false);
           document.body.style.overflow = bodyOverflowRef.current;
+          const pending = pendingScrollDownRef.current;
+          pendingScrollDownRef.current = 0;
+          if (pending > 0) window.scrollBy({ top: pending, left: 0, behavior: "auto" });
         })();
         return;
       }
@@ -228,6 +261,7 @@ export function HeroSection() {
         e.preventDefault();
         tracking = false;
         setExitInProgress(true);
+        pendingScrollDownRef.current += Math.max(0, -dy);
         void (async () => {
           await videoControls.start({
             rotate: transformedVideoRotate,
@@ -238,8 +272,25 @@ export function HeroSection() {
           });
           setIsTransformed(true);
           setExitInProgress(false);
+          const pending = pendingScrollDownRef.current;
+          pendingScrollDownRef.current = 0;
+          if (pending > 0) window.scrollBy({ top: pending, left: 0, behavior: "auto" });
         })();
         return;
+      }
+
+      if (dy <= -32) {
+        const el = containerRef.current;
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY;
+          const end = top + el.offsetHeight - window.innerHeight;
+          if (window.scrollY < end - 1) {
+            e.preventDefault();
+            tracking = false;
+            window.scrollTo({ top: end, behavior: "auto" });
+            return;
+          }
+        }
       }
 
       if (dy < 32) return;
@@ -445,22 +496,70 @@ export function HeroSection() {
       const wordStagger = 0.35;
       const totalReveal = (wordCount - 1) * wordStagger + wordDuration;
       const triggerDelayMs = Math.max(0, totalReveal * 0.6 * 1000);
+      const v = heroVideoRef.current;
 
-      const videoRevealDurationMs = 1450;
-      const aiAppearAtMs = Math.round(videoRevealDurationMs * 0.3);
+      const tryEnsurePlaying = async (video: HTMLVideoElement) => {
+        if (video.ended) return;
+        if (!video.paused && video.readyState >= 2) return;
+        video.muted = true;
+        const p = video.play();
+        if (p) await p.catch(() => { });
+        if (video.ended) return;
+        if (!video.paused && video.readyState >= 2) return;
+        await new Promise<void>((resolve) => {
+          const timeoutId = window.setTimeout(resolve, 2500);
+          const onPlaying = () => {
+            window.clearTimeout(timeoutId);
+            resolve();
+          };
+          video.addEventListener("playing", onPlaying, { once: true });
+        });
+      };
 
-      let resolveVideoDone: () => void = () => { };
-      const videoDone = new Promise<void>((resolve) => {
-        resolveVideoDone = resolve;
+      const waitForProgress = async (video: HTMLVideoElement, threshold: number) => {
+        if (threshold <= 0) return;
+        const calc = () => {
+          if (video.ended) return 1;
+          if (!Number.isFinite(video.duration) || video.duration <= 0) return 0;
+          return Math.min(1, Math.max(0, video.currentTime / video.duration));
+        };
+
+        if (calc() >= threshold) return;
+
+        await new Promise<void>((resolve) => {
+          const timeoutId = window.setTimeout(resolve, 15000);
+          const onUpdate = () => {
+            if (calc() >= threshold) {
+              cleanup();
+              resolve();
+            }
+          };
+          const onEnded = () => {
+            cleanup();
+            resolve();
+          };
+          const cleanup = () => {
+            window.clearTimeout(timeoutId);
+            video.removeEventListener("timeupdate", onUpdate);
+            video.removeEventListener("loadedmetadata", onUpdate);
+            video.removeEventListener("durationchange", onUpdate);
+            video.removeEventListener("ended", onEnded);
+          };
+          video.addEventListener("timeupdate", onUpdate);
+          video.addEventListener("loadedmetadata", onUpdate);
+          video.addEventListener("durationchange", onUpdate);
+          video.addEventListener("ended", onEnded, { once: true });
+          onUpdate();
+        });
+      };
+
+      let resolveVideoRevealDone: () => void = () => { };
+      const videoRevealDone = new Promise<void>((resolve) => {
+        resolveVideoRevealDone = resolve;
       });
 
-      let resolveAiDone: () => void = () => { };
-      const aiDone = new Promise<void>((resolve) => {
-        resolveAiDone = resolve;
-      });
-
-      let aiTimeoutId = 0;
       const videoTimeoutId = window.setTimeout(() => {
+        v?.play().catch(() => { });
         const videoPromise = videoControls.start({
           opacity: [0, 1],
           rotate: defaultVideoRotate,
@@ -470,27 +569,25 @@ export function HeroSection() {
           ...(enableHeavyVideoEffects ? { filter: ["blur(18px)", "blur(0px)"] } : { filter: "blur(0px)" }),
           transition: { duration: 1.45, ease: [0.16, 1, 0.3, 1] },
         });
-
-        aiTimeoutId = window.setTimeout(() => {
-          aiControls.start({
-            opacity: 1,
-            transition: { duration: 0.01 },
-          });
-          aiLettersControls.start("show").then(() => {
-            setScrollDownReady(true);
-            resolveAiDone();
-          });
-        }, aiAppearAtMs);
-
-        videoPromise.then(() => resolveVideoDone());
+        videoPromise.then(() => resolveVideoRevealDone());
       }, triggerDelayMs);
 
       await oneVisionWordsControls.start("show");
 
-      await Promise.all([videoDone, aiDone]);
+      await videoRevealDone;
       window.clearTimeout(videoTimeoutId);
-      window.clearTimeout(aiTimeoutId);
 
+      if (v) {
+        await tryEnsurePlaying(v);
+        await waitForProgress(v, 0.8);
+      }
+
+      await aiControls.start({
+        opacity: 1,
+        transition: { duration: 0.01 },
+      });
+      await aiLettersControls.start("show");
+      setScrollDownReady(true);
       setIntroDone(true);
     };
 
