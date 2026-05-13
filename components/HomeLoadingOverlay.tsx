@@ -52,7 +52,7 @@ export function HomeLoadingOverlay() {
 
     const waitForVideo = async (video: HTMLVideoElement) => {
       if (!video) return;
-      if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) return;
+      if (video.readyState >= HTMLMediaElement.HAVE_METADATA) return;
       await new Promise<void>((resolve) => {
         const onReady = () => {
           cleanup();
@@ -68,8 +68,7 @@ export function HomeLoadingOverlay() {
           video.removeEventListener("loadeddata", onReady);
           video.removeEventListener("error", onError);
         };
-        video.addEventListener("canplay", onReady, { once: true });
-        video.addEventListener("canplaythrough", onReady, { once: true });
+        video.addEventListener("loadedmetadata", onReady, { once: true });
         video.addEventListener("loadeddata", onReady, { once: true });
         video.addEventListener("error", onError, { once: true });
       });
@@ -77,8 +76,15 @@ export function HomeLoadingOverlay() {
 
     const waitForMedia = async () => {
       if (typeof document === "undefined") return;
-      const images = Array.from(document.querySelectorAll("img"));
-      const videos = Array.from(document.querySelectorAll("video"));
+      const topSection = document.querySelector("#top");
+      const images = Array.from((topSection ?? document).querySelectorAll("img"));
+      const videos = Array.from(document.querySelectorAll("video")).filter((video) => {
+        const src = video.currentSrc || video.getAttribute("src") || "";
+        if (src.includes("11May.mp4")) return true;
+        const source = video.querySelector("source");
+        const sourceSrc = source?.getAttribute("src") ?? "";
+        return sourceSrc.includes("11May.mp4");
+      });
       await Promise.all([
         ...images.map((img) => waitForImage(img)),
         ...videos.map((video) => waitForVideo(video)),
@@ -93,7 +99,10 @@ export function HomeLoadingOverlay() {
             : Promise.resolve();
 
         await Promise.race([fontsReady, new Promise<void>((r) => window.setTimeout(r, 1200))]);
-        await waitForMedia();
+        await Promise.race([
+          waitForMedia(),
+          new Promise<void>((r) => window.setTimeout(r, 5000)),
+        ]);
         await new Promise<void>((r) => requestAnimationFrame(() => r()));
 
         const elapsed = performance.now() - start;

@@ -579,7 +579,7 @@ export function HeroSection() {
 
       if (v) {
         await tryEnsurePlaying(v);
-        await waitForProgress(v, 0.8);
+        await waitForProgress(v, 0.6);
       }
 
       await aiControls.start({
