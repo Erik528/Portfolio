@@ -50,34 +50,76 @@ export function HomeLoadingOverlay() {
       }
     };
 
-    const waitForVideo = async (video: HTMLVideoElement) => {
+    const waitForVideoFullyLoaded = async (video: HTMLVideoElement) => {
       if (!video) return;
-      if (video.readyState >= HTMLMediaElement.HAVE_METADATA) return;
+
+      const isFullyBuffered = () => {
+        const duration = video.duration;
+        if (!Number.isFinite(duration) || duration <= 0) return false;
+        const buffered = video.buffered;
+        if (!buffered || buffered.length === 0) return false;
+        let end = 0;
+        for (let i = 0; i < buffered.length; i += 1) {
+          end = Math.max(end, buffered.end(i));
+        }
+        return end >= duration - 0.1;
+      };
+
+      if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+        await new Promise<void>((resolve) => {
+          const onReady = () => {
+            cleanup();
+            resolve();
+          };
+          const onError = () => {
+            cleanup();
+            resolve();
+          };
+          const cleanup = () => {
+            video.removeEventListener("loadedmetadata", onReady);
+            video.removeEventListener("error", onError);
+          };
+          video.addEventListener("loadedmetadata", onReady, { once: true });
+          video.addEventListener("error", onError, { once: true });
+        });
+      }
+
+      if (isFullyBuffered()) return;
+
+      try {
+        video.preload = "auto";
+        video.load();
+      } catch { }
+
       await new Promise<void>((resolve) => {
-        const onReady = () => {
-          cleanup();
-          resolve();
+        const onCheck = () => {
+          if (isFullyBuffered()) {
+            cleanup();
+            resolve();
+          }
         };
         const onError = () => {
           cleanup();
           resolve();
         };
         const cleanup = () => {
-          video.removeEventListener("canplay", onReady);
-          video.removeEventListener("canplaythrough", onReady);
-          video.removeEventListener("loadeddata", onReady);
+          video.removeEventListener("progress", onCheck);
+          video.removeEventListener("canplaythrough", onCheck);
+          video.removeEventListener("durationchange", onCheck);
+          video.removeEventListener("loadedmetadata", onCheck);
           video.removeEventListener("error", onError);
         };
-        video.addEventListener("loadedmetadata", onReady, { once: true });
-        video.addEventListener("loadeddata", onReady, { once: true });
+        video.addEventListener("progress", onCheck);
+        video.addEventListener("canplaythrough", onCheck);
+        video.addEventListener("durationchange", onCheck);
+        video.addEventListener("loadedmetadata", onCheck);
         video.addEventListener("error", onError, { once: true });
+        onCheck();
       });
     };
 
-    const waitForMedia = async () => {
+    const find11MayVideo = () => {
       if (typeof document === "undefined") return;
-      const topSection = document.querySelector("#top");
-      const images = Array.from((topSection ?? document).querySelectorAll("img"));
       const videos = Array.from(document.querySelectorAll("video")).filter((video) => {
         const src = video.currentSrc || video.getAttribute("src") || "";
         if (src.includes("11May.mp4")) return true;
@@ -85,10 +127,23 @@ export function HomeLoadingOverlay() {
         const sourceSrc = source?.getAttribute("src") ?? "";
         return sourceSrc.includes("11May.mp4");
       });
-      await Promise.all([
-        ...images.map((img) => waitForImage(img)),
-        ...videos.map((video) => waitForVideo(video)),
-      ]);
+      return videos[0];
+    };
+
+    const waitForAboveFoldImages = async () => {
+      if (typeof document === "undefined") return;
+      const topSection = document.querySelector("#top");
+      const images = Array.from((topSection ?? document).querySelectorAll("img"));
+      await Promise.all(images.map((img) => waitForImage(img)));
+    };
+
+    const waitFor11May = async () => {
+      if (typeof document === "undefined") return;
+      await new Promise<void>((r) => requestAnimationFrame(() => r()));
+      await new Promise<void>((r) => requestAnimationFrame(() => r()));
+      const video = find11MayVideo();
+      if (!video) return;
+      await waitForVideoFullyLoaded(video);
     };
 
     const run = async () => {
@@ -99,10 +154,8 @@ export function HomeLoadingOverlay() {
             : Promise.resolve();
 
         await Promise.race([fontsReady, new Promise<void>((r) => window.setTimeout(r, 1200))]);
-        await Promise.race([
-          waitForMedia(),
-          new Promise<void>((r) => window.setTimeout(r, 5000)),
-        ]);
+        await Promise.race([waitForAboveFoldImages(), new Promise<void>((r) => window.setTimeout(r, 5000))]);
+        await waitFor11May();
         await new Promise<void>((r) => requestAnimationFrame(() => r()));
 
         const elapsed = performance.now() - start;
