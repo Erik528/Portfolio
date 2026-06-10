@@ -212,11 +212,11 @@ export function BottomCTASection() {
 
         <div className="mt-8 flex flex-col items-center gap-3 text-[11px] leading-none text-neutral-700 md:mt-9 md:text-[12px]">
           <a
-            href="mailto:boooots2023@gmail.com"
+            href="mailto:booots2023@gmail.com"
             className="flex items-center gap-3 transition-colors duration-300 hover:text-neutral-900"
           >
             <Image src="/assets/email.png" alt="Email" width={16} height={16} className="h-4 w-4" />
-            <span>boooots2023@gmail.com</span>
+            <span>booots2023@gmail.com</span>
           </a>
           <a
             href="https://www.linkedin.com/in/erik-wu-0626a0130"
