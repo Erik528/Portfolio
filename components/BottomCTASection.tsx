@@ -181,7 +181,7 @@ export function BottomCTASection() {
             muted
             loop
             playsInline
-            preload={inView ? "auto" : "metadata"}
+            preload="metadata"
             ref={leftVideoRef}
             className="-translate-x-[70%] h-[468px] w-[468px] object-contain opacity-85 saturate-125 md:-translate-x-1/2 md:h-[676px] md:w-[676px] lg:h-[806px] lg:w-[806px]"
           >
@@ -193,7 +193,7 @@ export function BottomCTASection() {
             muted
             loop
             playsInline
-            preload={inView ? "auto" : "metadata"}
+            preload="metadata"
             ref={rightVideoRef}
             className="translate-x-[70%] h-[468px] w-[468px] object-contain opacity-85 saturate-125 md:translate-x-1/2 md:h-[676px] md:w-[676px] lg:h-[806px] lg:w-[806px]"
           >

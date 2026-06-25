@@ -85,16 +85,16 @@ export default function SpriteZeroPage() {
 
               <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-4 lg:gap-4">
                 <CokeBreakFadeInOnView className="w-full">
-                  <img src="/assets/SP1.jpg" alt="Sprite Zero key visual 1" className="w-full h-auto" />
+                  <img src="/assets/SP1.jpg" alt="Sprite Zero key visual 1" loading="lazy" className="w-full h-auto" />
                 </CokeBreakFadeInOnView>
                 <CokeBreakFadeInOnView delay={0.1} className="w-full">
-                  <img src="/assets/SP2.jpg" alt="Sprite Zero key visual 2" className="w-full h-auto" />
+                  <img src="/assets/SP2.jpg" alt="Sprite Zero key visual 2" loading="lazy" className="w-full h-auto" />
                 </CokeBreakFadeInOnView>
                 <CokeBreakFadeInOnView delay={0.2} className="w-full">
-                  <img src="/assets/SP3.jpg" alt="Sprite Zero key visual 3" className="w-full h-auto" />
+                  <img src="/assets/SP3.jpg" alt="Sprite Zero key visual 3" loading="lazy" className="w-full h-auto" />
                 </CokeBreakFadeInOnView>
                 <CokeBreakFadeInOnView delay={0.3} className="w-full">
-                  <img src="/assets/SP4.png" alt="Sprite Zero key visual 4" className="w-full h-auto" />
+                  <img src="/assets/SP4.png" alt="Sprite Zero key visual 4" loading="lazy" className="w-full h-auto" />
                 </CokeBreakFadeInOnView>
               </div>
 
@@ -111,17 +111,17 @@ export default function SpriteZeroPage() {
                   </CokeBreakFadeInOnView>
 
                   <CokeBreakFadeInOnView delay={0.35} className="md:col-span-5">
-                    <img src="/assets/SP5.jpg" alt="Sprite Zero key visual detail 1" className="w-full h-auto" />
+                    <img src="/assets/SP5.jpg" alt="Sprite Zero key visual detail 1" loading="lazy" className="w-full h-auto" />
                     <div className="mt-3 text-center text-[12px] leading-[1.45] text-neutral-700">Initial sketch</div>
                   </CokeBreakFadeInOnView>
                 </div>
 
                 <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-4 lg:gap-4">
                   <CokeBreakFadeInOnView delay={0.45} className="w-full">
-                    <img src="/assets/SP6.jpg" alt="Sprite Zero key visual detail 2" className="w-full h-auto" />
+                    <img src="/assets/SP6.jpg" alt="Sprite Zero key visual detail 2" loading="lazy" className="w-full h-auto" />
                   </CokeBreakFadeInOnView>
                   <CokeBreakFadeInOnView delay={0.55} className="w-full">
-                    <img src="/assets/SP7.jpg" alt="Sprite Zero key visual detail 3" className="w-full h-auto" />
+                    <img src="/assets/SP7.jpg" alt="Sprite Zero key visual detail 3" loading="lazy" className="w-full h-auto" />
                   </CokeBreakFadeInOnView>
                 </div>
 
@@ -133,10 +133,10 @@ export default function SpriteZeroPage() {
 
                 <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-4 lg:gap-4">
                   <CokeBreakFadeInOnView delay={0.65} className="w-full">
-                    <img src="/assets/SP8.jpg" alt="Sprite Zero key visual detail 4" className="w-full h-auto" />
+                    <img src="/assets/SP8.jpg" alt="Sprite Zero key visual detail 4" loading="lazy" className="w-full h-auto" />
                   </CokeBreakFadeInOnView>
                   <CokeBreakFadeInOnView delay={0.75} className="w-full">
-                    <img src="/assets/SP9.jpg" alt="Sprite Zero key visual detail 5" className="w-full h-auto" />
+                    <img src="/assets/SP9.jpg" alt="Sprite Zero key visual detail 5" loading="lazy" className="w-full h-auto" />
                   </CokeBreakFadeInOnView>
                 </div>
 

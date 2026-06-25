@@ -31,6 +31,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         {children}
+        <script defer src="/main.js" />
       </body>
     </html>
   );

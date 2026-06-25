@@ -42,14 +42,9 @@ export default function VisualCampaignsPage() {
       caption: "Propecia hair loss treatment Campaign (2019)",
     },
     {
-      src: "/assets/VisualCampaigns/1i.jpg",
-      alt: "Visual Campaign 1i",
-      caption: "Co-branded campaign for Kinder Joy and National Geographic (2018)",
-    },
-    {
-      src: "/assets/VisualCampaigns/1k.jpg",
-      alt: "Visual Campaign 1k",
-      caption: "Key visual for Coca-Cola Peach flavour product launch (2022)",
+      src: "/assets/VisualCampaigns/1j.jpg",
+      alt: "Visual Campaign 1j",
+      caption: "Plavix antithrombotic medication campaign (2019)",
     },
     {
       src: "/assets/VisualCampaigns/1l.jpg",
@@ -57,14 +52,14 @@ export default function VisualCampaignsPage() {
       caption: "Key visual for Coca-Cola Peach flavour product launch (2022)",
     },
     {
-      src: "/assets/VisualCampaigns/1j.jpg",
-      alt: "Visual Campaign 1j",
-      caption: "Plavix antithrombotic medication campaign (2019)",
+      src: "/assets/VisualCampaigns/1k.jpg",
+      alt: "Visual Campaign 1k",
+      caption: "Key visual for Coca-Cola Peach flavour product launch (2022)",
     },
     {
-      src: "/assets/VisualCampaigns/1m.jpg",
-      alt: "Visual Campaign 1m",
-      caption: "Key visual for Maestro hair styling brand product campaign (2018)",
+      src: "/assets/VisualCampaigns/1u.jpg",
+      alt: "Visual Campaign 1u",
+      caption: "Product Visual for Lifease(2026)",
     },
     {
       src: "/assets/VisualCampaigns/1n.jpg",

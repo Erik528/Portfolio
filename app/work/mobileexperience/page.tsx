@@ -165,7 +165,7 @@ export default function MobileExperiencePage() {
                 <div className="w-full">
                   <div className="flex flex-col leading-none">
                     {gifImages.map((img) => (
-                      <img key={img.src} src={img.src} alt={img.alt} className="block h-auto w-full" />
+                      <img key={img.src} src={img.src} alt={img.alt} loading="lazy" className="block h-auto w-full" />
                     ))}
                   </div>
                 </div>
@@ -194,9 +194,9 @@ export default function MobileExperiencePage() {
 
                 <div className="w-full">
                   <div className="flex flex-col leading-none">
-                    <img src="/assets/MobileExperience/SST1.png" alt="Mobile experience SST1" className="block h-auto w-full" />
-                    <img src="/assets/MobileExperience/SST2.png" alt="Mobile experience SST2" className="block h-auto w-full" />
-                    <img src="/assets/MobileExperience/SST3.png" alt="Mobile experience SST3" className="block h-auto w-full" />
+                    <img src="/assets/MobileExperience/SST1.png" alt="Mobile experience SST1" loading="lazy" className="block h-auto w-full" />
+                    <img src="/assets/MobileExperience/SST2.png" alt="Mobile experience SST2" loading="lazy" className="block h-auto w-full" />
+                    <img src="/assets/MobileExperience/SST3.png" alt="Mobile experience SST3" loading="lazy" className="block h-auto w-full" />
                   </div>
                 </div>
 

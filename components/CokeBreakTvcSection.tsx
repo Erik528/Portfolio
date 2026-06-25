@@ -90,7 +90,7 @@ export function CokeBreakTvcSection({
                 autoPlay
                 controls
                 playsInline
-                preload="auto"
+                preload="metadata"
                 className="absolute inset-0 h-full w-full object-cover"
               >
                 <source src={previewSrc} type="video/mp4" />

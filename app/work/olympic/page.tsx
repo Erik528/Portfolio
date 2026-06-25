@@ -80,16 +80,16 @@ export default function OlympicPage() {
 
               <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-4 lg:gap-4">
                 <div className="w-full">
-                  <img src="/assets/OLP1.jpg" alt="Key Visual 1" className="w-full h-auto" />
+                  <img src="/assets/OLP1.jpg" alt="Key Visual 1" loading="lazy" className="w-full h-auto" />
                 </div>
                 <div className="w-full">
-                  <img src="/assets/OLP2.jpg" alt="Key Visual 2" className="w-full h-auto" />
+                  <img src="/assets/OLP2.jpg" alt="Key Visual 2" loading="lazy" className="w-full h-auto" />
                 </div>
                 <div className="w-full">
-                  <img src="/assets/OLP3.jpg" alt="Key Visual 3" className="w-full h-auto" />
+                  <img src="/assets/OLP3.jpg" alt="Key Visual 3" loading="lazy" className="w-full h-auto" />
                 </div>
                 <div className="w-full">
-                  <img src="/assets/OLP4.jpg" alt="Key Visual 4" className="w-full h-auto" />
+                  <img src="/assets/OLP4.jpg" alt="Key Visual 4" loading="lazy" className="w-full h-auto" />
                 </div>
               </div>
 
@@ -110,16 +110,16 @@ export default function OlympicPage() {
 
                 <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-4 lg:gap-4">
                   <div className="w-full">
-                    <img src="/assets/OLP5.jpg" alt="Social poster 1" className="w-full h-auto" />
+                    <img src="/assets/OLP5.jpg" alt="Social poster 1" loading="lazy" className="w-full h-auto" />
                   </div>
                   <div className="w-full">
-                    <img src="/assets/OLP6.jpg" alt="Social poster 2" className="w-full h-auto" />
+                    <img src="/assets/OLP6.jpg" alt="Social poster 2" loading="lazy" className="w-full h-auto" />
                   </div>
                   <div className="w-full">
-                    <img src="/assets/OLP7.jpg" alt="Social poster 3" className="w-full h-auto" />
+                    <img src="/assets/OLP7.jpg" alt="Social poster 3" loading="lazy" className="w-full h-auto" />
                   </div>
                   <div className="w-full">
-                    <img src="/assets/OLP8.jpg" alt="Social poster 4" className="w-full h-auto" />
+                    <img src="/assets/OLP8.jpg" alt="Social poster 4" loading="lazy" className="w-full h-auto" />
                   </div>
                 </div>
 

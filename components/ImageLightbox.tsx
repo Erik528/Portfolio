@@ -35,7 +35,7 @@ export function ImageLightbox({ open, onClose, src, alt, caption }: ImageLightbo
       <button type="button" aria-label="Close" onClick={onClose} className="absolute inset-0 cursor-default" />
       <div className="relative z-10 w-full max-w-6xl overflow-hidden rounded-[18px] bg-background">
         <div className="max-h-[78vh] w-full overflow-hidden bg-neutral-200">
-          <img src={src} alt={alt} className="h-full max-h-[78vh] w-full object-contain" />
+          <img src={src} alt={alt} loading="lazy" className="h-full max-h-[78vh] w-full object-contain" />
         </div>
         {caption ? (
           <div className="border-t border-neutral-300/70 px-5 py-4 text-center text-[12px] leading-[1.5] text-neutral-700 md:px-7 md:py-5 md:text-[13px]">

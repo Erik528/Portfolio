@@ -55,7 +55,7 @@ export default function BreathOfLifePage() {
                   <div className="ml-auto w-full max-w-[640px] md:max-w-[720px] lg:max-w-[840px] xl:max-w-[980px]">
                     <CokeBreakFadeInOnView delay={1.35} className="mb-6">
                       <div className="flex justify-end md:justify-start">
-                        <img src="/assets/COPD.png" alt="COPD" className="h-10 w-auto md:h-12 lg:h-14" />
+                        <img src="/assets/COPD.png" alt="COPD" loading="lazy" className="h-10 w-auto md:h-12 lg:h-14" />
                       </div>
                     </CokeBreakFadeInOnView>
 
@@ -103,10 +103,10 @@ export default function BreathOfLifePage() {
 
               <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8 lg:gap-3">
                 <CokeBreakFadeInOnView className="w-full">
-                  <img src="/assets/BOL1.png" alt="Breath of Life H5 page display 1" className="w-full h-auto" />
+                  <img src="/assets/BOL1.png" alt="Breath of Life H5 page display 1" loading="lazy" className="w-full h-auto" />
                 </CokeBreakFadeInOnView>
                 <CokeBreakFadeInOnView delay={0.1} className="w-full">
-                  <img src="/assets/BOL2.png" alt="Breath of Life H5 page display 2" className="w-full h-auto" />
+                  <img src="/assets/BOL2.png" alt="Breath of Life H5 page display 2" loading="lazy" className="w-full h-auto" />
                 </CokeBreakFadeInOnView>
                 <CokeBreakFadeInOnView delay={0.2} className="w-full md:flex md:h-full md:pl-6 lg:pl-8">
                   <div className="mt-8 text-left text-[16px] leading-[1.55] text-neutral-900 md:mt-auto md:ml-auto md:max-w-[420px] md:text-[18px]">
@@ -129,7 +129,7 @@ export default function BreathOfLifePage() {
               <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:gap-0">
                 <CokeBreakFadeInOnView className="w-full">
                   <div className="h-[320px] w-full overflow-hidden bg-neutral-100 md:h-[360px] lg:h-[420px]">
-                    <img src="/assets/BOL3.png" alt="Breath of Life Cannes photo" className="h-full w-full object-contain" />
+                    <img src="/assets/BOL3.png" alt="Breath of Life Cannes photo" loading="lazy" className="h-full w-full object-contain" />
                   </div>
                   <div className="mt-4 text-center text-[12px] leading-[1.45] text-neutral-700">
                     our team’s Creative Director and Executive Creative Director at Cannes
@@ -137,7 +137,7 @@ export default function BreathOfLifePage() {
                 </CokeBreakFadeInOnView>
                 <CokeBreakFadeInOnView delay={0.1} className="w-full">
                   <div className="h-[320px] w-full overflow-hidden bg-neutral-100 md:h-[360px] lg:h-[420px]">
-                    <img src="/assets/BOL4.jpg" alt="Cannes Lions trophy in office" className="h-full w-full object-contain" />
+                    <img src="/assets/BOL4.jpg" alt="Cannes Lions trophy in office" loading="lazy" className="h-full w-full object-contain" />
                   </div>
                   <div className="mt-4 text-center text-[12px] leading-[1.45] text-neutral-700">the Cannes Lions trophy in office</div>
                 </CokeBreakFadeInOnView>
