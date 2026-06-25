@@ -182,7 +182,6 @@ export default function CokeBreakPage() {
                     </p>
                   </CokeBreakFadeInOnView>
 
-                  <CokeBreakScrollToTopButton className="mt-40 hidden md:block" />
                 </div>
 
                 <div className="md:col-span-8">
@@ -199,6 +198,45 @@ export default function CokeBreakPage() {
                     <div className="relative aspect-[16/9] w-full overflow-hidden bg-neutral-200">
                       <Image src="/assets/云2小.jpg" alt="Coke AI creative contest entry" fill className="object-cover" />
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-16 md:mt-20 lg:mt-24">
+              <div className="text-[14px] font-bold uppercase tracking-[0.4em] text-neutral-900 md:text-[16px]">
+                ACTIVATION IDEA
+              </div>
+              <div className="mt-3 border-b border-neutral-300/70" />
+
+              <div className="mt-10 grid grid-cols-1 items-start gap-10 md:grid-cols-12 md:gap-12 lg:gap-16">
+                <div className="md:col-span-7 lg:col-span-7">
+                  <div className="relative aspect-video w-full overflow-hidden bg-black">
+                    <iframe
+                      className="absolute inset-0 h-full w-full"
+                      src="https://www.youtube-nocookie.com/embed/u9yQ74Y6Xw4?rel=0&modestbranding=1"
+                      title="Chengdu Taikoo Li Activation"
+                      allow="encrypted-media; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+
+                <div className="md:col-span-5 lg:col-span-5 md:self-stretch">
+                  <div className="flex h-full flex-col">
+                    <CokeBreakFadeInOnView
+                      className="w-full text-[16px] leading-[1.55] text-neutral-900 md:text-[18px]"
+                      amount={0.7}
+                      delay={0.2}
+                    >
+                      <p>
+                        We also collaborated with two iconic Chinese landmarks, Shanghai’s Wukang Mansion and Chengdu
+                        Taikoo Li, producing two event-marketing films powered by AR technology. One of them, Wukang
+                        Mansion Activation, unexpectedly went viral on the Chinese internet.
+                      </p>
+                    </CokeBreakFadeInOnView>
+
+                    <CokeBreakScrollToTopButton className="mt-auto ml-auto mr-8 hidden md:block" />
                   </div>
                 </div>
               </div>

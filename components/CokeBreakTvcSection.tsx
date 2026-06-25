@@ -10,6 +10,7 @@ type CokeBreakTvcSectionProps = {
   title?: string;
   startOnPreviewClick?: boolean;
   playButtonTone?: "light" | "dark";
+  inlinePlayback?: boolean;
 };
 
 const getYouTubeId = (url: string) => {
@@ -39,6 +40,7 @@ export function CokeBreakTvcSection({
   title = "Video",
   startOnPreviewClick = false,
   playButtonTone = "light",
+  inlinePlayback = false,
 }: CokeBreakTvcSectionProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoId = getYouTubeId(youtubeUrl);
@@ -70,12 +72,12 @@ export function CokeBreakTvcSection({
         </a>
       ) : (
         <div
-          className={`relative aspect-video w-full overflow-hidden bg-black ${!isPlaying && startOnPreviewClick && !!videoId ? "cursor-pointer" : ""}`}
-          role={!isPlaying && startOnPreviewClick && !!videoId ? "button" : undefined}
-          tabIndex={!isPlaying && startOnPreviewClick && !!videoId ? 0 : undefined}
-          onClick={!isPlaying && startOnPreviewClick && !!videoId ? () => setIsPlaying(true) : undefined}
+          className={`relative aspect-video w-full overflow-hidden bg-black ${!isPlaying && startOnPreviewClick && (inlinePlayback || !!videoId) ? "cursor-pointer" : ""}`}
+          role={!isPlaying && startOnPreviewClick && (inlinePlayback || !!videoId) ? "button" : undefined}
+          tabIndex={!isPlaying && startOnPreviewClick && (inlinePlayback || !!videoId) ? 0 : undefined}
+          onClick={!isPlaying && startOnPreviewClick && (inlinePlayback || !!videoId) ? () => setIsPlaying(true) : undefined}
           onKeyDown={
-            !isPlaying && startOnPreviewClick && !!videoId
+            !isPlaying && startOnPreviewClick && (inlinePlayback || !!videoId)
               ? (event) => {
                 if (event.key === "Enter" || event.key === " ") setIsPlaying(true);
               }
@@ -83,7 +85,17 @@ export function CokeBreakTvcSection({
           }
         >
           {isPlaying ? (
-            embedUrl ? (
+            inlinePlayback ? (
+              <video
+                autoPlay
+                controls
+                playsInline
+                preload="auto"
+                className="absolute inset-0 h-full w-full object-cover"
+              >
+                <source src={previewSrc} type="video/mp4" />
+              </video>
+            ) : embedUrl ? (
               <iframe
                 className="absolute inset-0 h-full w-full"
                 src={embedUrl}
@@ -111,7 +123,7 @@ export function CokeBreakTvcSection({
         </div>
       )}
 
-      {!isPlaying && (externalUrl || videoId) ? (
+      {!isPlaying && (externalUrl || videoId || inlinePlayback) ? (
         externalUrl ? (
           <a
             href={externalUrl}

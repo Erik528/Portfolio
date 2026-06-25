@@ -116,6 +116,122 @@ export function WorkCareerHistorySection() {
       }),
     };
 
+  type CareerEntry = (typeof careerHistory)[number];
+
+  const CareerCard = ({ entry }: { entry: CareerEntry }) => {
+    return (
+      <div className="flex h-full w-[320px] shrink-0 flex-col md:w-[360px] lg:w-[380px] xl:w-[420px]">
+        {entry.variant === "freelancer" ? (
+          <div className="flex items-start gap-4">
+            <div className="relative mt-[2px] h-11 w-24">
+              <Image
+                src="/assets/resume/WeberShandwick.png"
+                alt="Weber Shandwick"
+                fill
+                sizes="96px"
+                className="object-contain"
+              />
+            </div>
+            <div className="mt-[2px] h-11 w-px bg-neutral-300/70" />
+            <div className="min-w-0 flex-1 max-w-[300px]">
+              <div className="flex items-baseline gap-4">
+                <div className="min-w-0 truncate text-[12px] font-bold text-neutral-900">{entry.timeframe}</div>
+                <div className="ml-auto shrink-0 whitespace-nowrap text-[12px] font-medium text-neutral-500">
+                  {entry.location}
+                </div>
+              </div>
+              <div className="mt-2 break-words text-[15px] font-bold leading-[1.15] text-[#f12b1c] md:text-[16px]">
+                {entry.role}
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {entry.variant === "branded" ? (
+          <div className="flex items-start gap-4">
+            {entry.companyMark && brandedTopLogoSrc[entry.companyMark] ? (
+              <div className={`relative mt-[2px] h-11 ${entry.logoWidth ?? "w-20"}`}>
+                <Image
+                  src={brandedTopLogoSrc[entry.companyMark]}
+                  alt={entry.companyMark}
+                  fill
+                  sizes="160px"
+                  className={`object-contain ${"logoScale" in entry ? entry.logoScale ?? "" : ""}`}
+                />
+              </div>
+            ) : (
+              <div
+                role="img"
+                aria-label={entry.companyMark ?? "Company logo"}
+                className={`mt-[2px] h-11 ${entry.logoWidth ?? "w-20"} border border-neutral-300/70 bg-neutral-200`}
+              />
+            )}
+            <div className="mt-[2px] h-11 w-px bg-neutral-300/70" />
+            <div className="min-w-0 flex-1 max-w-[300px]">
+              <div className="flex items-baseline gap-4">
+                <div className="min-w-0 truncate text-[12px] font-bold text-neutral-900">{entry.timeframe}</div>
+                <div className="ml-auto shrink-0 whitespace-nowrap text-[12px] font-medium text-neutral-500">
+                  {entry.location}
+                </div>
+              </div>
+              <div className="mt-2 break-words text-[15px] font-bold leading-[1.15] text-[#f12b1c] md:text-[16px]">
+                {entry.role}
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        <ul className="mt-4 space-y-4 text-[11px] leading-[1.6] text-neutral-700">
+          {entry.bullets.map((item) => (
+            <li key={item} className="flex gap-3">
+              <span className="mt-[7px] h-[6px] w-[6px] shrink-0 rounded-full bg-[#f12b1c]" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div
+          className={
+            entry.variant === "freelancer"
+              ? "mt-6 flex items-center gap-4"
+              : "mt-6 flex flex-wrap items-center gap-3"
+          }
+        >
+          {entry.logos.map((label) => (
+            <div
+              key={label}
+              className={
+                entry.variant === "freelancer"
+                  ? `relative h-9 ${freelancerLogoWidths[label] ?? "w-24"}`
+                  : "inline-flex h-8 items-center justify-center text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-700"
+              }
+            >
+              {entry.variant === "freelancer" ? (
+                <Image
+                  src={freelancerLogoSrc[label] ?? ""}
+                  alt={label}
+                  fill
+                  sizes="120px"
+                  className="object-contain"
+                />
+              ) : entry.variant === "branded" && brandedClientLogoSrc[label] ? (
+                <Image
+                  src={brandedClientLogoSrc[label]}
+                  alt={label}
+                  width={96}
+                  height={32}
+                  className="h-8 w-auto object-contain"
+                />
+              ) : (
+                label
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <section className="relative border-b border-neutral-300/50 pt-14 pb-16 md:pt-16 md:pb-20 lg:pt-20 lg:pb-24">
       <div className="absolute left-0 right-0 top-4 border-t border-neutral-300/50" />
@@ -123,129 +239,39 @@ export function WorkCareerHistorySection() {
         <div className="mb-10 text-[14px] font-bold uppercase tracking-[0.4em] text-neutral-900 md:text-[16px]">
           CAREER HISTORY
         </div>
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.25, margin: "-10% 0px -20% 0px" }}
-          className="grid grid-cols-1 gap-12 md:grid-cols-2 2xl:grid-cols-[1.35fr_1.25fr_1fr_1fr] 2xl:gap-12"
-        >
-          {careerHistory.map((entry, idx) => (
-            <motion.div
-              key={`${entry.timeframe}-${entry.role}`}
-              custom={idx}
-              variants={itemVariants}
-              className="flex h-full flex-col"
-            >
-              {entry.variant === "freelancer" ? (
-                <div className="flex items-start gap-4">
-                  <div className="relative mt-[2px] h-11 w-24">
-                    <Image
-                      src="/assets/resume/WeberShandwick.png"
-                      alt="Weber Shandwick"
-                      fill
-                      sizes="96px"
-                      className="object-contain"
-                    />
-                  </div>
-                  <div className="mt-[2px] h-11 w-px bg-neutral-300/70" />
-                  <div className="min-w-0 flex-1 max-w-[300px]">
-                    <div className="flex items-baseline gap-4">
-                      <div className="min-w-0 truncate text-[12px] font-bold text-neutral-900">{entry.timeframe}</div>
-                      <div className="ml-auto shrink-0 whitespace-nowrap text-[12px] font-medium text-neutral-500">
-                        {entry.location}
-                      </div>
-                    </div>
-                    <div className="mt-2 break-words text-[15px] font-bold leading-[1.15] text-[#f12b1c] md:text-[16px]">
-                      {entry.role}
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-
-              {entry.variant === "branded" ? (
-                <div className="flex items-start gap-4">
-                  {entry.companyMark && brandedTopLogoSrc[entry.companyMark] ? (
-                    <div className={`relative mt-[2px] h-11 ${entry.logoWidth ?? "w-20"}`}>
-                      <Image
-                        src={brandedTopLogoSrc[entry.companyMark]}
-                        alt={entry.companyMark}
-                        fill
-                        sizes="160px"
-                        className={`object-contain ${"logoScale" in entry ? entry.logoScale ?? "" : ""}`}
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      role="img"
-                      aria-label={entry.companyMark ?? "Company logo"}
-                      className={`mt-[2px] h-11 ${entry.logoWidth ?? "w-20"} border border-neutral-300/70 bg-neutral-200`}
-                    />
-                  )}
-                  <div className="mt-[2px] h-11 w-px bg-neutral-300/70" />
-                  <div className="min-w-0 flex-1 max-w-[300px]">
-                    <div className="flex items-baseline gap-4">
-                      <div className="min-w-0 truncate text-[12px] font-bold text-neutral-900">{entry.timeframe}</div>
-                      <div className="ml-auto shrink-0 whitespace-nowrap text-[12px] font-medium text-neutral-500">
-                        {entry.location}
-                      </div>
-                    </div>
-                    <div className="mt-2 break-words text-[15px] font-bold leading-[1.15] text-[#f12b1c] md:text-[16px]">
-                      {entry.role}
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-
-              <ul className="mt-4 space-y-4 text-[11px] leading-[1.6] text-neutral-700">
-                {entry.bullets.map((item) => (
-                  <li key={item} className="flex gap-3">
-                    <span className="mt-[7px] h-[6px] w-[6px] shrink-0 rounded-full bg-[#f12b1c]" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div
-                className={
-                  entry.variant === "freelancer"
-                    ? "mt-6 flex items-center gap-4"
-                    : "mt-6 flex flex-wrap items-center gap-3"
-                }
+        {reduceMotion ? (
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.25, margin: "-10% 0px -20% 0px" }}
+            className="grid grid-cols-1 gap-12 md:grid-cols-2 2xl:grid-cols-[1.35fr_1.25fr_1fr_1fr] 2xl:gap-12"
+          >
+            {careerHistory.map((entry, idx) => (
+              <motion.div
+                key={`${entry.timeframe}-${entry.role}`}
+                custom={idx}
+                variants={itemVariants}
+                className="flex h-full flex-col"
               >
-                {entry.logos.map((label) => (
-                  <div
-                    key={label}
-                    className={
-                      entry.variant === "freelancer"
-                        ? `relative h-9 ${freelancerLogoWidths[label] ?? "w-24"}`
-                        : "inline-flex h-8 items-center justify-center text-[10px] font-bold uppercase tracking-[0.22em] text-neutral-700"
-                    }
-                  >
-                    {entry.variant === "freelancer" ? (
-                      <Image
-                        src={freelancerLogoSrc[label] ?? ""}
-                        alt={label}
-                        fill
-                        sizes="120px"
-                        className="object-contain"
-                      />
-                    ) : entry.variant === "branded" && brandedClientLogoSrc[label] ? (
-                      <Image
-                        src={brandedClientLogoSrc[label]}
-                        alt={label}
-                        width={96}
-                        height={32}
-                        className="h-8 w-auto object-contain"
-                      />
-                    ) : (
-                      label
-                    )}
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+                <CareerCard entry={entry} />
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 12, filter: "blur(10px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            viewport={{ once: true, amount: 0.25, margin: "-10% 0px -20% 0px" }}
+            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+            className="marquee"
+          >
+            <div className="marquee__track gap-12 pr-12">
+              {[...careerHistory, ...careerHistory].map((entry, idx) => (
+                <CareerCard key={`${entry.timeframe}-${entry.role}-${idx}`} entry={entry} />
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
     </section>
   );

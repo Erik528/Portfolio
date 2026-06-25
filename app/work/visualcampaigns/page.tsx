@@ -79,6 +79,21 @@ export default function VisualCampaignsPage() {
     { src: "/assets/VisualCampaigns/1p.jpg", alt: "Visual Campaign 1p", caption: "Coca-Cola Recipe campaign (2023)" },
     { src: "/assets/VisualCampaigns/1q.jpg", alt: "Visual Campaign 1q", caption: "Coca-Cola Recipe campaign (2023)" },
     {
+      src: "/assets/VisualCampaigns/1r.jpg",
+      alt: "Visual Campaign 1r",
+      caption: "Product key visual for Buick Envision (2021)",
+    },
+    {
+      src: "/assets/VisualCampaigns/1s.jpg",
+      alt: "Visual Campaign 1s",
+      caption: "Product key visual for Buick Envision (2021)",
+    },
+    {
+      src: "/assets/VisualCampaigns/1t.jpg",
+      alt: "Visual Campaign 1t",
+      caption: "Product key visual for Buick Envision (2021)",
+    },
+    {
       src: "/assets/VisualCampaigns/2a.jpg",
       alt: "Visual Campaign 2a",
       caption: "Key visual for MET Academy campaign (2018)",

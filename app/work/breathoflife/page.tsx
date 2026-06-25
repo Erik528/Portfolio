@@ -4,7 +4,7 @@ import { CokeBreakFadeInOnView } from "../../../components/CokeBreakFadeInOnView
 import { RevealImageOnView } from "../../../components/RevealImageOnView";
 
 const videoSrc = "/videos/0417-BreathOfLifeMontage.mp4";
-const youtubeUrl = "https://youtu.be/RotRNImfVHA?si=DH-Ltc87hlbSqdxs";
+const youtubeUrl = "https://www.youtube.com/watch?v=LxDhFBjPpn8";
 
 export default function BreathOfLifePage() {
   return (
