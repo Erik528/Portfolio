@@ -120,7 +120,7 @@ export function WorkCareerHistorySection() {
 
   const CareerCard = ({ entry }: { entry: CareerEntry }) => {
     return (
-      <div className="flex h-full w-[320px] shrink-0 flex-col md:w-[360px] lg:w-[380px] xl:w-[420px]">
+      <div className="flex h-full w-[380px] shrink-0 flex-col md:w-[440px] lg:w-[480px] xl:w-[520px]">
         {entry.variant === "freelancer" ? (
           <div className="flex items-start gap-4">
             <div className="relative mt-[2px] h-11 w-24">
@@ -133,9 +133,9 @@ export function WorkCareerHistorySection() {
               />
             </div>
             <div className="mt-[2px] h-11 w-px bg-neutral-300/70" />
-            <div className="min-w-0 flex-1 max-w-[300px]">
+            <div className="min-w-0 flex-1">
               <div className="flex items-baseline gap-4">
-                <div className="min-w-0 truncate text-[12px] font-bold text-neutral-900">{entry.timeframe}</div>
+                <div className="whitespace-nowrap text-[12px] font-bold text-neutral-900">{entry.timeframe}</div>
                 <div className="ml-auto shrink-0 whitespace-nowrap text-[12px] font-medium text-neutral-500">
                   {entry.location}
                 </div>
@@ -167,9 +167,9 @@ export function WorkCareerHistorySection() {
               />
             )}
             <div className="mt-[2px] h-11 w-px bg-neutral-300/70" />
-            <div className="min-w-0 flex-1 max-w-[300px]">
+            <div className="min-w-0 flex-1">
               <div className="flex items-baseline gap-4">
-                <div className="min-w-0 truncate text-[12px] font-bold text-neutral-900">{entry.timeframe}</div>
+                <div className="whitespace-nowrap text-[12px] font-bold text-neutral-900">{entry.timeframe}</div>
                 <div className="ml-auto shrink-0 whitespace-nowrap text-[12px] font-medium text-neutral-500">
                   {entry.location}
                 </div>
